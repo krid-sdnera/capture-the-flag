@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+  postgresdb:
+    image: postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=internal_user
+      - POSTGRES_PASSWORD=internal-password
+      - POSTGRES_DB=capture_the_flag
+    ports:
+      - 5432:5432
+    volumes:
+      - db:/var/lib/postgres
+  app:
+    image: node:18
+    restart: unless-stopped
+    depends_on:
+      - postgresdb
+    ports:
+      - $NODE_PORT:3000
+    environment:
+      - DB_HOST=postgresdb
+      - DB_USER=internal_user
+      - DB_PASSWORD=internal-password
+      - DB_NAME=capture_the_flag
+      - DB_PORT=5432
+
+volumes:
+  db:
