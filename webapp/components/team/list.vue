@@ -5,7 +5,9 @@ const { data, refresh, pending } = useFetch(`/api/teams`, {
 });
 
 const hasPrevPage = computed(() => page.value > 2);
-const hasNextPage = computed(() => page.value < data.value.maxPages);
+const hasNextPage = computed(
+  () => data.value && page.value < data.value.maxPages
+);
 
 const showTeamCreate = useState("showTeamCreate", () => false);
 function teamCreated(newId: number) {
