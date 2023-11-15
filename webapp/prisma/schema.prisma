@@ -1,6 +1,5 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,4 +7,26 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model Team {
+  id   Int          @id @default(autoincrement())
+  name String       @unique
+  logs TrackerLog[]
+}
+
+model Tracker {
+  id            Int          @id @default(autoincrement())
+  name          String       @unique
+  scoreModifier Float
+  logs          TrackerLog[]
+}
+
+model TrackerLog {
+  id        Int      @id @default(autoincrement())
+  datetime  DateTime
+  tracker   Tracker  @relation(fields: [trackerId], references: [id])
+  trackerId Int
+  team      Team?    @relation(fields: [teamId], references: [id])
+  teamId    Int
 }
