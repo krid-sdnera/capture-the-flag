@@ -1,4 +1,5 @@
 import prisma from "~/server/prisma";
+import { TeamData } from "~/server/types/team";
 
 export default defineEventHandler(async (event) => {
   const params = getQuery(event);
@@ -19,6 +20,12 @@ export default defineEventHandler(async (event) => {
     perPage: perPage,
     maxPages: Math.ceil(teamsCount / perPage),
     maxItems: teamsCount,
-    teams: teams,
+    teams: teams.map((team) => {
+      const teamData: TeamData = {
+        id: team.id,
+        name: team.name,
+      };
+      return teamData;
+    }),
   };
 });

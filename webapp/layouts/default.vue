@@ -12,7 +12,8 @@
       <div class="navigation-container">
         <ul>
           <li><NuxtLink :to="`/`">Home</NuxtLink></li>
-          <li><NuxtLink :to="`/teams`">Team List</NuxtLink></li>
+          <li><NuxtLink :to="`/teams`">Teams</NuxtLink></li>
+          <li><NuxtLink :to="`/trackers`">Trackers</NuxtLink></li>
         </ul>
       </div>
     </header>
