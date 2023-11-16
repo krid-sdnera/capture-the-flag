@@ -1,5 +1,17 @@
 <script setup lang="ts">
+import { useBreadcrumbs } from "~/types/breadcrumbs";
+
+useHead({
+  title: "Team",
+});
+
 definePageMeta({
+  breadcrumbs: useBreadcrumbs([
+    { to: `/`, label: `Home` },
+    { to: `/teams`, label: `Teams` },
+    { to: ``, label: `Team` },
+  ]),
+
   validate: async (route) => {
     if (Array.isArray(route.params.id)) {
       return false;
@@ -28,6 +40,7 @@ function teamDeleted(id: number) {
 
 <template>
   <div v-if="data && data.success && !pending">
+    <h2>Team: {{ data.team.name }}</h2>
     <button type="button" @click="showTeamUpdate = !showTeamUpdate">
       {{ showTeamUpdate ? "Hide" : "Show" }} Update Team
     </button>

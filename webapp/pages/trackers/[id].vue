@@ -1,5 +1,17 @@
 <script setup lang="ts">
+import { useBreadcrumbs } from "~/types/breadcrumbs";
+
+useHead({
+  title: "Tracker",
+});
+
 definePageMeta({
+  breadcrumbs: useBreadcrumbs([
+    { to: `/`, label: `Home` },
+    { to: `/trackers`, label: `Trackers` },
+    { to: ``, label: `Tracker` },
+  ]),
+
   validate: async (route) => {
     if (Array.isArray(route.params.id)) {
       return false;
@@ -28,6 +40,7 @@ function trackerDeleted(id: number) {
 
 <template>
   <div v-if="data && data.success && !pending">
+    <h2>Tracker: {{ data.tracker.name }}</h2>
     <button type="button" @click="showTrackerUpdate = !showTrackerUpdate">
       {{ showTrackerUpdate ? "Hide" : "Show" }} Update Tracker
     </button>

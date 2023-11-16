@@ -1,4 +1,15 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import type { Breadcrumb } from "~/types/breadcrumbs";
+useHead({
+  titleTemplate: (titleChunk) => {
+    return titleChunk ? `${titleChunk} - Capture the Flag` : "Capture the Flag";
+  },
+});
+const route = useRoute();
+const breadcrumbs = computed<Breadcrumb[]>(
+  () => (route.meta.breadcrumbs as Breadcrumb[]) || [{ to: "/", label: "Home" }]
+);
+</script>
 
 <template>
   <div class="app-container">
@@ -18,7 +29,16 @@
       </div>
     </header>
     <main>
-      <div class="breadcrumbs"></div>
+      <div class="breadcrumbs">
+        <ul>
+          <li v-for="(crumb, index) in breadcrumbs" :key="crumb.to">
+            <NuxtLink v-if="index < breadcrumbs.length - 1" :to="crumb.to">{{
+              crumb.label
+            }}</NuxtLink>
+            <span v-else>{{ crumb.label }}</span>
+          </li>
+        </ul>
+      </div>
       <slot />
     </main>
   </div>
@@ -57,14 +77,30 @@ header img {
   width: 72px;
 }
 
-header ul {
+header .navigation-container ul {
   list-style: none;
   padding: 0;
   margin: 0;
 }
-header ul li {
+header .navigation-container ul li {
   display: block;
   padding: 5px;
+}
+
+.breadcrumbs ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.breadcrumbs ul li {
+  display: inline-block;
+  padding: 10px 0;
+  padding-left: 10px;
+}
+.breadcrumbs ul li:not(:last-child)::after {
+  content: "/";
+  display: inline-block;
+  padding-left: 10px;
 }
 
 main {
