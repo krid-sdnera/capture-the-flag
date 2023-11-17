@@ -20,12 +20,18 @@ export default defineEventHandler(
     }
 
     try {
-      const team: Team = await prisma.team.create({
-        data: { name: body?.name },
+      const team = await prisma.team.create({
+        data: {
+          name: body?.name,
+          flagZoneLat: body?.flagZoneLat,
+          flagZoneLong: body?.flagZoneLong,
+        },
       });
       const teamData: TeamData = {
         id: team.id,
         name: team.name,
+        flagZoneLat: team.flagZoneLat,
+        flagZoneLong: team.flagZoneLong,
       };
       return { success: true, team: teamData };
     } catch (e) {

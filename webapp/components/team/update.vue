@@ -11,6 +11,8 @@ const props = defineProps<{
 const newTeam = ref<TeamUpdateInput>({
   id: props.team.id,
   name: props.team.name,
+  flagZoneLat: props.team.flagZoneLat,
+  flagZoneLong: props.team.flagZoneLong,
 });
 
 const isLoading = ref(false);
@@ -21,6 +23,8 @@ async function submitUpdate() {
   const reqBody: TeamUpdateInput = {
     id: newTeam.value.id,
     name: newTeam.value.name,
+    flagZoneLat: newTeam.value.flagZoneLat,
+    flagZoneLong: newTeam.value.flagZoneLong,
   };
   const data = await $fetch(`/api/teams/${props.team.id}`, {
     method: "put",
@@ -47,6 +51,22 @@ async function submitUpdate() {
     <div>
       <label for="form-team-update-name">Team name</label>
       <input id="form-team-update-name" v-model="newTeam.name" />
+    </div>
+    <div>
+      <label for="form-team-update-lat">Lat</label>
+      <input
+        type="number"
+        id="form-team-update-lat"
+        v-model="newTeam.flagZoneLat"
+      />
+    </div>
+    <div>
+      <label for="form-team-update-long">Long</label>
+      <input
+        type="number"
+        id="form-team-update-long"
+        v-model="newTeam.flagZoneLong"
+      />
     </div>
     <div v-if="hasError">{{ errorMessage }}</div>
     <button type="button" @click="submitUpdate" :disabled="isLoading">

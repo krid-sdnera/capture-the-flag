@@ -1,10 +1,10 @@
-import { Prisma, Team } from "@prisma/client";
+import { Prisma, TrackerLog } from "@prisma/client";
 import prisma from "~/server/prisma";
-import { TeamUpdateInput, TeamData } from "~/server/types/team";
+import { LogUpdateInput, LogData } from "~/server/types/log";
 
 interface ResponseSuccess {
   success: true;
-  team: TeamData;
+  log: LogData;
 }
 interface ResponseFailure {
   success: false;
@@ -17,39 +17,49 @@ export default defineEventHandler(
       return { success: false, message: "missing id in url" };
     }
 
-    const body = await readBody<TeamUpdateInput>(event);
+    const body = await readBody<LogUpdateInput>(event);
 
     if (body.id !== Number(event.context.params?.id)) {
       return { success: false, message: `ID in body does not match url path` };
     }
 
-    if (!body?.name) {
-      return { success: false, message: `Team does not have a name` };
+    if (!body?.datetime) {
+      return { success: false, message: `Log does not have a datetime` };
     }
 
     try {
-      const team = await prisma.team.update({
+      const log = await prisma.trackerLog.update({
         where: { id: Number(event.context.params.id) },
         data: {
-          name: body?.name,
-          flagZoneLat: body?.flagZoneLat,
-          flagZoneLong: body?.flagZoneLong,
+          datetime: body.datetime,
+          lat: body.lat,
+          long: body.long,
+          trackerId: body.trackerId,
+          teamId: body.teamId ?? undefined,
+          distance: body.distance,
+        },
+        include: {
+          team: true,
+          tracker: true,
         },
       });
-      const teamData: TeamData = {
-        id: team.id,
-        name: team.name,
-        flagZoneLat: team.flagZoneLat,
-        flagZoneLong: team.flagZoneLong,
+      const logData: LogData = {
+        id: log.id,
+        datetime: log.datetime.toISOString(),
+        lat: log.lat,
+        long: log.long,
+        tracker: log.tracker,
+        team: log.team,
+        distance: log.distance,
       };
-      return { success: true, team: teamData };
+      return { success: true, log: logData };
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         // The .code property can be accessed in a type-safe manner
         if (e.code === "P2002") {
           return {
             success: false,
-            message: `A team already exists with this name`,
+            message: `A log already exists with this name`,
           };
         }
       }

@@ -61,6 +61,8 @@ function teamDeleted(id: number) {
 
     <div>ID: {{ data.team.id }}</div>
     <div>Name: {{ data.team.name }}</div>
+    <div>Lat: {{ data.team.flagZoneLat }}</div>
+    <div>Long: {{ data.team.flagZoneLong }}</div>
   </div>
   <div v-else>loading or error</div>
 </template>

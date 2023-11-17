@@ -30,12 +30,16 @@ function teamCreated(newId: number) {
         <tr>
           <th>id</th>
           <th>name</th>
+          <th>lat</th>
+          <th>long</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="team in data.teams" :key="team.id">
           <td>{{ team.id }}</td>
           <td>{{ team.name }}</td>
+          <td>{{ team.flagZoneLat }}</td>
+          <td>{{ team.flagZoneLong }}</td>
           <td><NuxtLink :to="`/teams/${team.id}`">show</NuxtLink></td>
         </tr>
       </tbody>

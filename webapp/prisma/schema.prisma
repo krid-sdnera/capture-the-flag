@@ -10,9 +10,11 @@ datasource db {
 }
 
 model Team {
-  id   Int          @id @default(autoincrement())
-  name String       @unique
-  logs TrackerLog[]
+  id           Int          @id @default(autoincrement())
+  name         String       @unique
+  flagZoneLat  Float?
+  flagZoneLong Float?
+  logs         TrackerLog[]
 }
 
 model Tracker {
@@ -25,8 +27,11 @@ model Tracker {
 model TrackerLog {
   id        Int      @id @default(autoincrement())
   datetime  DateTime
+  lat       Float
+  long      Float
   tracker   Tracker  @relation(fields: [trackerId], references: [id])
   trackerId Int
   team      Team?    @relation(fields: [teamId], references: [id])
   teamId    Int
+  distance  Int
 }

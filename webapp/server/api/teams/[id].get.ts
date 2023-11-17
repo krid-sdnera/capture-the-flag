@@ -18,12 +18,14 @@ export default defineEventHandler(
     }
 
     try {
-      const team: Team = await prisma.team.findUniqueOrThrow({
+      const team = await prisma.team.findUniqueOrThrow({
         where: { id: Number(event.context.params.id) },
       });
       const teamData: TeamData = {
         id: team.id,
         name: team.name,
+        flagZoneLat: team.flagZoneLat,
+        flagZoneLong: team.flagZoneLong,
       };
       return { success: true, team: teamData };
     } catch (e) {

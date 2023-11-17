@@ -1,10 +1,9 @@
-import { Prisma, Tracker } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import prisma from "~/server/prisma";
-import { TrackerData } from "~/server/types/tracker";
 
 interface ResponseSuccess {
   success: true;
-  tracker: TrackerData;
+  log: { id: number };
 }
 interface ResponseFailure {
   success: false;
@@ -18,15 +17,10 @@ export default defineEventHandler(
     }
 
     try {
-      const tracker = await prisma.tracker.findUniqueOrThrow({
+      await prisma.trackerLog.delete({
         where: { id: Number(event.context.params.id) },
       });
-      const trackerData: TrackerData = {
-        id: tracker.id,
-        name: tracker.name,
-        scoreModifier: tracker.scoreModifier,
-      };
-      return { success: true, tracker: trackerData };
+      return { success: true, log: { id: Number(event.context.params.id) } };
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         // The .code property can be accessed in a type-safe manner

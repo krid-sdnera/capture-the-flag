@@ -25,6 +25,7 @@ const breadcrumbs = computed<Breadcrumb[]>(
           <li><NuxtLink :to="`/`">Home</NuxtLink></li>
           <li><NuxtLink :to="`/teams`">Teams</NuxtLink></li>
           <li><NuxtLink :to="`/trackers`">Trackers</NuxtLink></li>
+          <li><NuxtLink :to="`/logs`">Logs</NuxtLink></li>
         </ul>
       </div>
     </header>

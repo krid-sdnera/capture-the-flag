@@ -24,6 +24,8 @@ export default defineEventHandler(async (event) => {
       const teamData: TeamData = {
         id: team.id,
         name: team.name,
+        flagZoneLat: team.flagZoneLat,
+        flagZoneLong: team.flagZoneLong,
       };
       return teamData;
     }),

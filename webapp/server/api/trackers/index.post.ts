@@ -20,7 +20,7 @@ export default defineEventHandler(
     }
 
     try {
-      const tracker: Tracker = await prisma.tracker.create({
+      const tracker = await prisma.tracker.create({
         data: {
           name: body?.name,
           scoreModifier: body?.scoreModifier,
@@ -29,6 +29,7 @@ export default defineEventHandler(
       const trackerData: TrackerData = {
         id: tracker.id,
         name: tracker.name,
+        scoreModifier: tracker.scoreModifier,
       };
       return { success: true, tracker: trackerData };
     } catch (e) {

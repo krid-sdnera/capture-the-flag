@@ -28,7 +28,7 @@ export default defineEventHandler(
     }
 
     try {
-      const tracker: Tracker = await prisma.tracker.update({
+      const tracker = await prisma.tracker.update({
         where: { id: Number(event.context.params.id) },
         data: { name: body?.name },
       });
