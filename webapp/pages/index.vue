@@ -37,6 +37,8 @@ definePageMeta({
       </li>
       <li><NuxtLink :to="`/logs`">Log list</NuxtLink></li>
     </ul>
+
+    <Map></Map>
   </div>
 </template>
 
