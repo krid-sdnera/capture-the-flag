@@ -1,13 +1,7 @@
 <script setup lang="ts">
-const page = ref(1);
-const { data, refresh, pending } = useFetch(`/api/teams`, {
-  params: { page: page },
-});
-
-const hasPrevPage = computed(() => page.value > 2);
-const hasNextPage = computed(
-  () => data.value && page.value < data.value.maxPages
-);
+const { useListTeams } = useTeam();
+const { displayTeams, uiPageControls, refresh, loading, error, errorMessage } =
+  useListTeams();
 
 const showTeamCreate = useState("showTeamCreate", () => false);
 function teamCreated(newId: number) {
@@ -25,7 +19,9 @@ function teamCreated(newId: number) {
     </button>
     <TeamCreate v-if="showTeamCreate" @created="teamCreated"></TeamCreate>
 
-    <table v-if="data && data.success === true">
+    <div v-if="error">Unable to load team list {{ errorMessage }}</div>
+    <div v-else-if="loading">Loading Teams</div>
+    <table v-else>
       <thead>
         <tr>
           <th>id</th>
@@ -35,7 +31,7 @@ function teamCreated(newId: number) {
         </tr>
       </thead>
       <tbody>
-        <tr v-for="team in data.teams" :key="team.id">
+        <tr v-for="team in displayTeams" :key="team.id">
           <td>{{ team.id }}</td>
           <td>{{ team.name }}</td>
           <td>{{ team.flagZoneLat }}</td>
@@ -45,11 +41,6 @@ function teamCreated(newId: number) {
       </tbody>
     </table>
 
-    <button type="button" :disabled="!hasPrevPage" @click="page--">Prev</button>
-    Page {{ page }}
-    <button type="button" :disabled="!hasNextPage" @click="page++">Next</button>
-    <button type="button" :disabled="pending" @click="refresh()">
-      Refresh
-    </button>
+    <UiPageControls :controls="uiPageControls"></UiPageControls>
   </form>
 </template>

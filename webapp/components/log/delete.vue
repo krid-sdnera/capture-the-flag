@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { LogData } from "~/server/types/log";
+const { useDeleteLog } = useLog();
+const { deleteFn, deleted, loading, error, errorMessage } = useDeleteLog();
 
 const emit = defineEmits<{
   deleted: [id: number];
@@ -8,23 +10,12 @@ const props = defineProps<{
   log: LogData;
 }>();
 
-const isLoading = ref(false);
-const hasError = ref(false);
-const errorMessage = ref("");
-
 async function submitDelete() {
-  const data = await $fetch(`/api/logs/${props.log.id}`, {
-    method: "delete",
-  });
+  const logId = await deleteFn(props.log.id);
 
-  if (data.success === false) {
-    isLoading.value = false;
-    hasError.value = true;
-    errorMessage.value = data.message ?? "";
-    return;
+  if (logId) {
+    emit("deleted", logId);
   }
-
-  emit("deleted", data.log.id);
 }
 </script>
 
@@ -32,8 +23,8 @@ async function submitDelete() {
   <form>
     <h2>Delete Log</h2>
 
-    <div v-if="hasError">{{ errorMessage }}</div>
-    <button type="button" @click="submitDelete" :disabled="isLoading">
+    <div v-if="error">{{ errorMessage }}</div>
+    <button type="button" @click="submitDelete" :disabled="loading || deleted">
       Delete Log
     </button>
   </form>

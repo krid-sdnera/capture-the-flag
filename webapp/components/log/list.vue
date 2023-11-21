@@ -1,13 +1,7 @@
 <script setup lang="ts">
-const page = ref(1);
-const { data, refresh, pending } = useFetch(`/api/logs`, {
-  params: { page: page },
-});
-
-const hasPrevPage = computed(() => page.value > 2);
-const hasNextPage = computed(
-  () => data.value && page.value < data.value.maxPages
-);
+const { useListLogs } = useLog();
+const { displayLogs, uiPageControls, refresh, loading, error, errorMessage } =
+  useListLogs();
 
 const showLogCreate = useState("showLogCreate", () => false);
 function logCreated(newId: number) {
@@ -25,7 +19,9 @@ function logCreated(newId: number) {
     </button>
     <LogCreate v-if="showLogCreate" @created="logCreated"></LogCreate>
 
-    <table v-if="data && data.success === true">
+    <div v-if="error">Unable to load log list {{ errorMessage }}</div>
+    <div v-else-if="loading">Loading Logs</div>
+    <table v-else>
       <thead>
         <tr>
           <th>id</th>
@@ -38,7 +34,7 @@ function logCreated(newId: number) {
         </tr>
       </thead>
       <tbody>
-        <tr v-for="log in data.logs" :key="log.id">
+        <tr v-for="log in displayLogs" :key="log.id">
           <td>{{ log.id }}</td>
           <td>{{ log.datetime }}</td>
           <td>{{ log.lat }}</td>
@@ -51,11 +47,6 @@ function logCreated(newId: number) {
       </tbody>
     </table>
 
-    <button type="button" :disabled="!hasPrevPage" @click="page--">Prev</button>
-    Page {{ page }}
-    <button type="button" :disabled="!hasNextPage" @click="page++">Next</button>
-    <button type="button" :disabled="pending" @click="refresh()">
-      Refresh
-    </button>
+    <UiPageControls :controls="uiPageControls"></UiPageControls>
   </form>
 </template>

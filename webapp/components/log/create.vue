@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { LogCreateInput } from "~/server/types/log";
+const { useCreateLog } = useLog();
+const { create, created, loading, error, errorMessage } = useCreateLog();
 
 const emit = defineEmits<{
   created: [id: number];
@@ -13,10 +15,6 @@ const newLog = ref<LogCreateInput>({
   distance: 0,
 });
 
-const isLoading = ref(false);
-const hasError = ref(false);
-const errorMessage = ref("");
-
 async function submitCreate() {
   const reqBody: LogCreateInput = {
     datetime: newLog.value.datetime,
@@ -26,19 +24,11 @@ async function submitCreate() {
     teamId: newLog.value.teamId,
     distance: newLog.value.distance,
   };
-  const data = await $fetch(`/api/logs`, {
-    method: "post",
-    body: reqBody,
-  });
+  const logId = await create(reqBody);
 
-  if (data.success === false) {
-    isLoading.value = false;
-    hasError.value = true;
-    errorMessage.value = data.message ?? "";
-    return;
+  if (logId) {
+    emit("created", logId);
   }
-
-  emit("created", data.log.id);
 }
 </script>
 
@@ -73,8 +63,8 @@ async function submitCreate() {
         v-model="newLog.distance"
       />
     </div>
-    <div v-if="hasError">{{ errorMessage }}</div>
-    <button type="button" @click="submitCreate" :disabled="isLoading">
+    <div v-if="error">{{ errorMessage }}</div>
+    <button type="button" @click="submitCreate" :disabled="loading || created">
       Create Log
     </button>
   </form>

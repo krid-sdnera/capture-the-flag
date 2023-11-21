@@ -1,32 +1,56 @@
+import { Prisma } from "@prisma/client";
 import prisma from "~/server/prisma";
 import { TrackerData } from "~/server/types/tracker";
 
-export default defineEventHandler(async (event) => {
-  const params = getQuery(event);
+interface ResponseSuccess {
+  success: true;
+  page: number;
+  perPage: number;
+  maxPages: number;
+  maxItems: number;
+  trackers: TrackerData[];
+}
+interface ResponseFailure {
+  success: false;
+  message: string;
+}
 
-  const page = Number(params.page) || 1;
-  const perPage = 30;
+export default defineEventHandler(
+  async (event): Promise<ResponseSuccess | ResponseFailure> => {
+    try {
+      const params = getQuery(event);
 
-  const trackers = await prisma.tracker.findMany({
-    skip: perPage * (page - 1),
-    take: perPage,
-  });
+      const page = Number(params.page) || 1;
+      const perPage = 30;
 
-  const trackersCount = await prisma.tracker.count({});
+      const trackers = await prisma.tracker.findMany({
+        skip: perPage * (page - 1),
+        take: perPage,
+      });
 
-  return {
-    success: true,
-    page: page,
-    perPage: perPage,
-    maxPages: Math.ceil(trackersCount / perPage),
-    maxItems: trackersCount,
-    trackers: trackers.map((tracker) => {
-      const trackerData: TrackerData = {
-        id: tracker.id,
-        name: tracker.name,
-        scoreModifier: tracker.scoreModifier,
+      const trackersCount = await prisma.tracker.count({});
+
+      return {
+        success: true,
+        page: page,
+        perPage: perPage,
+        maxPages: Math.ceil(trackersCount / perPage),
+        maxItems: trackersCount,
+        trackers: trackers.map((tracker) => {
+          const trackerData: TrackerData = {
+            id: tracker.id,
+            name: tracker.name,
+            scoreModifier: tracker.scoreModifier,
+          };
+          return trackerData;
+        }),
       };
-      return trackerData;
-    }),
-  };
-});
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        // The .code property can be accessed in a type-safe manner
+      }
+
+      return { success: false, message: `an unknown error occurred` };
+    }
+  }
+);

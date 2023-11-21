@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { TrackerData, TrackerUpdateInput } from "~/server/types/tracker";
+const { useUpdateTracker } = useTracker();
+const { update, loading, error, errorMessage } = useUpdateTracker();
 
 const emit = defineEmits<{
   updated: [id: number];
@@ -14,29 +16,17 @@ const newTracker = ref<TrackerUpdateInput>({
   scoreModifier: props.tracker.scoreModifier,
 });
 
-const isLoading = ref(false);
-const hasError = ref(false);
-const errorMessage = ref("");
-
 async function submitUpdate() {
   const reqBody: TrackerUpdateInput = {
     id: newTracker.value.id,
     name: newTracker.value.name,
     scoreModifier: newTracker.value.scoreModifier,
   };
-  const data = await $fetch(`/api/trackers/${props.tracker.id}`, {
-    method: "put",
-    body: reqBody,
-  });
+  const trackerId = await update(reqBody);
 
-  if (data.success === false) {
-    isLoading.value = false;
-    hasError.value = true;
-    errorMessage.value = data.message ?? "";
-    return;
+  if (trackerId) {
+    emit("updated", trackerId);
   }
-
-  emit("updated", data.tracker.id);
 }
 </script>
 
@@ -60,8 +50,8 @@ async function submitUpdate() {
         v-model="newTracker.scoreModifier"
       />
     </div>
-    <div v-if="hasError">{{ errorMessage }}</div>
-    <button type="button" @click="submitUpdate" :disabled="isLoading">
+    <div v-if="error">{{ errorMessage }}</div>
+    <button type="button" @click="submitUpdate" :disabled="loading">
       Update Tracker
     </button>
   </form>

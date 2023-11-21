@@ -1,13 +1,13 @@
 <script setup lang="ts">
-const page = ref(1);
-const { data, refresh, pending } = useFetch(`/api/trackers`, {
-  params: { page: page },
-});
-
-const hasPrevPage = computed(() => page.value > 2);
-const hasNextPage = computed(
-  () => data.value && page.value < data.value.maxPages
-);
+const { useListTrackers } = useTracker();
+const {
+  displayTrackers,
+  uiPageControls,
+  refresh,
+  loading,
+  error,
+  errorMessage,
+} = useListTrackers();
 
 const showTrackerCreate = useState("showTrackerCreate", () => false);
 function trackerCreated(newId: number) {
@@ -28,7 +28,9 @@ function trackerCreated(newId: number) {
       @created="trackerCreated"
     ></TrackerCreate>
 
-    <table v-if="data && data.success === true">
+    <div v-if="error">Unable to load tracker list {{ errorMessage }}</div>
+    <div v-else-if="loading">Loading Trackers</div>
+    <table v-else>
       <thead>
         <tr>
           <th>id</th>
@@ -37,7 +39,7 @@ function trackerCreated(newId: number) {
         </tr>
       </thead>
       <tbody>
-        <tr v-for="tracker in data.trackers" :key="tracker.id">
+        <tr v-for="tracker in displayTrackers" :key="tracker.id">
           <td>{{ tracker.id }}</td>
           <td>{{ tracker.name }}</td>
           <td>x{{ tracker.scoreModifier }}</td>
@@ -46,11 +48,6 @@ function trackerCreated(newId: number) {
       </tbody>
     </table>
 
-    <button type="button" :disabled="!hasPrevPage" @click="page--">Prev</button>
-    Page {{ page }}
-    <button type="button" :disabled="!hasNextPage" @click="page++">Next</button>
-    <button type="button" :disabled="pending" @click="refresh()">
-      Refresh
-    </button>
+    <UiPageControls :controls="uiPageControls"></UiPageControls>
   </form>
 </template>

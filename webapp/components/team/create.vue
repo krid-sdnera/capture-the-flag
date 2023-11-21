@@ -1,14 +1,12 @@
 <script setup lang="ts">
 import type { TeamCreateInput } from "~/server/types/team";
+const { useCreateTeam } = useTeam();
+const { create, created, loading, error, errorMessage } = useCreateTeam();
 
 const emit = defineEmits<{
   created: [id: number];
 }>();
 const newTeam = ref<TeamCreateInput>({ name: "" });
-
-const isLoading = ref(false);
-const hasError = ref(false);
-const errorMessage = ref("");
 
 async function submitCreate() {
   const reqBody: TeamCreateInput = {
@@ -16,19 +14,11 @@ async function submitCreate() {
     flagZoneLat: newTeam.value.flagZoneLat,
     flagZoneLong: newTeam.value.flagZoneLong,
   };
-  const data = await $fetch(`/api/teams`, {
-    method: "post",
-    body: reqBody,
-  });
+  const teamId = await create(reqBody);
 
-  if (data.success === false) {
-    isLoading.value = false;
-    hasError.value = true;
-    errorMessage.value = data.message ?? "";
-    return;
+  if (teamId) {
+    emit("created", teamId);
   }
-
-  emit("created", data.team.id);
 }
 </script>
 
@@ -55,8 +45,8 @@ async function submitCreate() {
         v-model="newTeam.flagZoneLong"
       />
     </div>
-    <div v-if="hasError">{{ errorMessage }}</div>
-    <button type="button" @click="submitCreate" :disabled="isLoading">
+    <div v-if="error">{{ errorMessage }}</div>
+    <button type="button" @click="submitCreate" :disabled="loading || created">
       Create Team
     </button>
   </form>

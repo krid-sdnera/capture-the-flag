@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { LogData, LogUpdateInput } from "~/server/types/log";
+const { useUpdateLog } = useLog();
+const { update, loading, error, errorMessage } = useUpdateLog();
 
 const emit = defineEmits<{
   updated: [id: number];
@@ -18,10 +20,6 @@ const newLog = ref<LogUpdateInput>({
   distance: props.log.distance,
 });
 
-const isLoading = ref(false);
-const hasError = ref(false);
-const errorMessage = ref("");
-
 async function submitUpdate() {
   const reqBody: LogUpdateInput = {
     id: newLog.value.id,
@@ -32,19 +30,11 @@ async function submitUpdate() {
     teamId: newLog.value.teamId,
     distance: newLog.value.distance,
   };
-  const data = await $fetch(`/api/logs/${props.log.id}`, {
-    method: "put",
-    body: reqBody,
-  });
+  const logId = await update(reqBody);
 
-  if (data.success === false) {
-    isLoading.value = false;
-    hasError.value = true;
-    errorMessage.value = data.message ?? "";
-    return;
+  if (logId) {
+    emit("updated", logId);
   }
-
-  emit("updated", data.log.id);
 }
 </script>
 
@@ -82,8 +72,8 @@ async function submitUpdate() {
         v-model="newLog.distance"
       />
     </div>
-    <div v-if="hasError">{{ errorMessage }}</div>
-    <button type="button" @click="submitUpdate" :disabled="isLoading">
+    <div v-if="error">{{ errorMessage }}</div>
+    <button type="button" @click="submitUpdate" :disabled="loading">
       Update Log
     </button>
   </form>

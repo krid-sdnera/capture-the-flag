@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { TeamData } from "~/server/types/team";
+const { useDeleteTeam } = useTeam();
+const { deleteFn, deleted, loading, error, errorMessage } = useDeleteTeam();
 
 const emit = defineEmits<{
   deleted: [id: number];
@@ -8,23 +10,12 @@ const props = defineProps<{
   team: TeamData;
 }>();
 
-const isLoading = ref(false);
-const hasError = ref(false);
-const errorMessage = ref("");
-
 async function submitDelete() {
-  const data = await $fetch(`/api/teams/${props.team.id}`, {
-    method: "delete",
-  });
+  const teamId = await deleteFn(props.team.id);
 
-  if (data.success === false) {
-    isLoading.value = false;
-    hasError.value = true;
-    errorMessage.value = data.message ?? "";
-    return;
+  if (teamId) {
+    emit("deleted", teamId);
   }
-
-  emit("deleted", data.team.id);
 }
 </script>
 
@@ -32,8 +23,8 @@ async function submitDelete() {
   <form>
     <h2>Delete Team</h2>
 
-    <div v-if="hasError">{{ errorMessage }}</div>
-    <button type="button" @click="submitDelete" :disabled="isLoading">
+    <div v-if="error">{{ errorMessage }}</div>
+    <button type="button" @click="submitDelete" :disabled="loading || deleted">
       Delete Team
     </button>
   </form>

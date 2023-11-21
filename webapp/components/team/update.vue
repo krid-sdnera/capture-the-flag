@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { TeamData, TeamUpdateInput } from "~/server/types/team";
+const { useUpdateTeam } = useTeam();
+const { update, loading, error, errorMessage } = useUpdateTeam();
 
 const emit = defineEmits<{
   updated: [id: number];
@@ -15,10 +17,6 @@ const newTeam = ref<TeamUpdateInput>({
   flagZoneLong: props.team.flagZoneLong,
 });
 
-const isLoading = ref(false);
-const hasError = ref(false);
-const errorMessage = ref("");
-
 async function submitUpdate() {
   const reqBody: TeamUpdateInput = {
     id: newTeam.value.id,
@@ -26,19 +24,12 @@ async function submitUpdate() {
     flagZoneLat: newTeam.value.flagZoneLat,
     flagZoneLong: newTeam.value.flagZoneLong,
   };
-  const data = await $fetch(`/api/teams/${props.team.id}`, {
-    method: "put",
-    body: reqBody,
-  });
 
-  if (data.success === false) {
-    isLoading.value = false;
-    hasError.value = true;
-    errorMessage.value = data.message ?? "";
-    return;
+  const teamId = await update(reqBody);
+
+  if (teamId) {
+    emit("updated", teamId);
   }
-
-  emit("updated", data.team.id);
 }
 </script>
 
@@ -68,8 +59,8 @@ async function submitUpdate() {
         v-model="newTeam.flagZoneLong"
       />
     </div>
-    <div v-if="hasError">{{ errorMessage }}</div>
-    <button type="button" @click="submitUpdate" :disabled="isLoading">
+    <div v-if="error">{{ errorMessage }}</div>
+    <button type="button" @click="submitUpdate" :disabled="loading">
       Update Team
     </button>
   </form>

@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { TrackerData } from "~/server/types/tracker";
+const { useDeleteTracker } = useTracker();
+const { deleteFn, deleted, loading, error, errorMessage } = useDeleteTracker();
 
 const emit = defineEmits<{
   deleted: [id: number];
@@ -8,23 +10,12 @@ const props = defineProps<{
   tracker: TrackerData;
 }>();
 
-const isLoading = ref(false);
-const hasError = ref(false);
-const errorMessage = ref("");
-
 async function submitDelete() {
-  const data = await $fetch(`/api/trackers/${props.tracker.id}`, {
-    method: "delete",
-  });
+  const trackerId = await deleteFn(props.tracker.id);
 
-  if (data.success === false) {
-    isLoading.value = false;
-    hasError.value = true;
-    errorMessage.value = data.message ?? "";
-    return;
+  if (trackerId) {
+    emit("deleted", trackerId);
   }
-
-  emit("deleted", data.tracker.id);
 }
 </script>
 
@@ -32,8 +23,8 @@ async function submitDelete() {
   <form>
     <h2>Delete Tracker</h2>
 
-    <div v-if="hasError">{{ errorMessage }}</div>
-    <button type="button" @click="submitDelete" :disabled="isLoading">
+    <div v-if="error">{{ errorMessage }}</div>
+    <button type="button" @click="submitDelete" :disabled="loading || deleted">
       Delete Tracker
     </button>
   </form>
