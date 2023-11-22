@@ -2,6 +2,9 @@ import { Prisma, Team } from "@prisma/client";
 import prisma from "~/server/prisma";
 import { TeamCreateInput, TeamData } from "~/server/types/team";
 
+import { useSocketServer } from "~/server/utils/websocket";
+const { sendMessage } = useSocketServer();
+
 interface ResponseSuccess {
   success: true;
   team: TeamData;
@@ -33,6 +36,13 @@ export default defineEventHandler(
         flagZoneLat: team.flagZoneLat,
         flagZoneLong: team.flagZoneLong,
       };
+
+      sendMessage("team", {
+        type: "team",
+        action: "create",
+        team: teamData,
+      });
+
       return { success: true, team: teamData };
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {

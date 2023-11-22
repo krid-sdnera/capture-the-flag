@@ -1,11 +1,15 @@
 import { Prisma } from "@prisma/client";
 import { connect } from "mqtt";
 import prisma from "~/server/prisma";
+import { LogData } from "~/server/types/log";
 import {
   MqttTrackerMessage,
   MqttTrackerMessageJoin,
   MqttTrackerMessageUp,
 } from "~/server/types/mqtt";
+
+import { useSocketServer } from "~/server/utils/websocket";
+const { sendMessage } = useSocketServer();
 
 // TODO define these somewhere.
 const username = "";
@@ -66,7 +70,7 @@ async function handleTrackerMessageUp(message: MqttTrackerMessageUp) {
   );
 
   // Log data point.
-  await prisma.trackerLog.create({
+  const log = await prisma.trackerLog.create({
     data: {
       datetime: new Date(Date.now()),
       lat: uplinkMessage.lat,
@@ -75,9 +79,27 @@ async function handleTrackerMessageUp(message: MqttTrackerMessageUp) {
       trackerId: trackerData.id,
       distance: teamIdDistance.distance,
     },
+    include: {
+      team: true,
+      tracker: true,
+    },
   });
 
   // Send update via websocket.
+  const logData: LogData = {
+    id: log.id,
+    datetime: log.datetime.toISOString(),
+    lat: log.lat,
+    long: log.long,
+    tracker: log.tracker,
+    team: log.team,
+    distance: log.distance,
+  };
+  sendMessage("log", {
+    type: "log",
+    action: "create",
+    log: logData,
+  });
 }
 
 function parseUpLinkMessage(message: MqttTrackerMessageUp): {

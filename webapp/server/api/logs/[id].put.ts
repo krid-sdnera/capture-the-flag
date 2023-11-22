@@ -2,6 +2,9 @@ import { Prisma, TrackerLog } from "@prisma/client";
 import prisma from "~/server/prisma";
 import { LogUpdateInput, LogData } from "~/server/types/log";
 
+import { useSocketServer } from "~/server/utils/websocket";
+const { sendMessage } = useSocketServer();
+
 interface ResponseSuccess {
   success: true;
   log: LogData;
@@ -52,6 +55,13 @@ export default defineEventHandler(
         team: log.team,
         distance: log.distance,
       };
+
+      sendMessage("log", {
+        type: "log",
+        action: "update",
+        log: logData,
+      });
+
       return { success: true, log: logData };
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {

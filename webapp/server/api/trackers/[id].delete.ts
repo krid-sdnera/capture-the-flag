@@ -1,6 +1,9 @@
 import { Prisma, Tracker } from "@prisma/client";
 import prisma from "~/server/prisma";
 
+import { useSocketServer } from "~/server/utils/websocket";
+const { sendMessage } = useSocketServer();
+
 interface ResponseSuccess {
   success: true;
   tracker: { id: number };
@@ -17,12 +20,20 @@ export default defineEventHandler(
     }
 
     try {
+      const trackerId = Number(event.context.params.id);
       await prisma.tracker.delete({
-        where: { id: Number(event.context.params.id) },
+        where: { id: trackerId },
       });
+
+      sendMessage("tracker", {
+        type: "tracker",
+        action: "delete",
+        trackerId: trackerId,
+      });
+
       return {
         success: true,
-        tracker: { id: Number(event.context.params.id) },
+        tracker: { id: trackerId },
       };
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {

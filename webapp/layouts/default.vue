@@ -41,6 +41,8 @@ const breadcrumbs = computed<Breadcrumb[]>(
         </ul>
       </div>
       <slot />
+
+      <WebSocket></WebSocket>
     </main>
   </div>
 </template>

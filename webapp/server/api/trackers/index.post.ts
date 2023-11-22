@@ -1,6 +1,8 @@
-import { Prisma, Tracker } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import prisma from "~/server/prisma";
 import { TrackerCreateInput, TrackerData } from "~/server/types/tracker";
+import { useSocketServer } from "~/server/utils/websocket";
+const { sendMessage } = useSocketServer();
 
 interface ResponseSuccess {
   success: true;
@@ -31,6 +33,12 @@ export default defineEventHandler(
         name: tracker.name,
         scoreModifier: tracker.scoreModifier,
       };
+
+      sendMessage("tracker", {
+        type: "tracker",
+        action: "create",
+        tracker: trackerData,
+      });
       return { success: true, tracker: trackerData };
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
