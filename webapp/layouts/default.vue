@@ -29,7 +29,7 @@ const breadcrumbs = computed<Breadcrumb[]>(
           <li><NuxtLink :to="`/flags`">Flags</NuxtLink></li>
           <li><NuxtLink :to="`/logs`">Logs</NuxtLink></li>
           <li><NuxtLink :to="`/actions`">Actions</NuxtLink></li>
-          <!-- <li><NuxtLink :to="`/stats`">Stats</NuxtLink></li> -->
+          <li><NuxtLink :to="`/stats`">Stats</NuxtLink></li>
         </ul>
       </div>
     </header>
@@ -154,5 +154,15 @@ th {
 tbody tr:hover td,
 tbody tr:hover th {
   background-color: #94c69780; /*MVD light green with 50% alpha*/
+}
+
+table {
+  border-collapse: collapse;
+}
+
+td,
+th {
+  border: 1px solid #555;
+  padding: 3px 10px;
 }
 </style>

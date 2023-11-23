@@ -61,6 +61,7 @@ function trackerDeleted(id: number) {
 
     <div>ID: {{ data.tracker.id }}</div>
     <div>Name: {{ data.tracker.name }}</div>
+    <div>Score Modifier: {{ data.tracker.scoreModifier }}</div>
 
     <FlagList :tracker="data.tracker"></FlagList>
   </div>

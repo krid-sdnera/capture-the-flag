@@ -1,8 +1,9 @@
 export const ActionOptions = {
   violation: "Violation: General",
   violationFlag: "Violation: Flag",
+  violationMissingLifeToken: "Violation: Missing Life Token",
   respawn: "Respawn",
-  death: "Death",
+  kill: "Kill",
   chance: "Game of Chance",
   other: "Other",
 } as const;

@@ -16,6 +16,16 @@ export default defineNuxtConfig({
       flagWindowIntervalMinutes: 1,
       flagKeepAliveMinutes: 60,
       GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
+      scoreModifiers: {
+        flagMinute: 1,
+        flagVisibilityViolation: -60,
+        capturedLifeToken: 15,
+        missingLifeToken: -30,
+        gameOfChanceWin: 1,
+        gameOfChanceLose: -1,
+        respawn: 1,
+        bonus: { mostConcurrentFlags: 15 },
+      },
     },
   },
   vite: {
