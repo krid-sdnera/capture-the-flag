@@ -26,6 +26,7 @@ const breadcrumbs = computed<Breadcrumb[]>(
           <li><NuxtLink :to="`/teams`">Teams</NuxtLink></li>
           <li><NuxtLink :to="`/trackers`">Trackers</NuxtLink></li>
           <li><NuxtLink :to="`/logs`">Logs</NuxtLink></li>
+          <li><NuxtLink :to="`/stats`">Stats</NuxtLink></li>
         </ul>
       </div>
     </header>
@@ -53,9 +54,14 @@ body {
   padding: 0;
 }
 body,
-.app-container * {
+.app-container {
   background-color: black;
-  color: aliceblue;
+  color: white;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+a {
+  color: white;
 }
 
 .app-container {
