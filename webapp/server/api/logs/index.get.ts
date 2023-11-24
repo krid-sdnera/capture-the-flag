@@ -26,10 +26,6 @@ export default defineEventHandler(
       const logs = await prisma.trackerLog.findMany({
         skip: perPage * (page - 1),
         take: perPage,
-        include: {
-          team: true,
-          tracker: true,
-        },
       });
 
       const logsCount = await prisma.trackerLog.count({});
@@ -46,8 +42,8 @@ export default defineEventHandler(
             datetime: log.datetime.toISOString(),
             lat: log.lat,
             long: log.long,
-            tracker: log.tracker,
-            team: log.team,
+            trackerId: log.trackerId,
+            teamId: log.teamId,
             distance: log.distance,
           };
           return logData;

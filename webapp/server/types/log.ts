@@ -1,6 +1,3 @@
-import { TeamData } from "./team";
-import { TrackerData } from "./tracker";
-
 export interface LogCreateInput {
   datetime: string;
   lat: number;
@@ -25,7 +22,7 @@ export interface LogData {
   datetime: string;
   lat: number;
   long: number;
-  tracker: TrackerData;
-  team: TeamData | null;
+  trackerId: number;
+  teamId: number | null;
   distance: number;
 }

@@ -20,18 +20,14 @@ export default defineEventHandler(
     try {
       const log = await prisma.trackerLog.findUniqueOrThrow({
         where: { id: Number(event.context.params.id) },
-        include: {
-          team: true,
-          tracker: true,
-        },
       });
       const logData: LogData = {
         id: log.id,
         datetime: log.datetime.toISOString(),
         lat: log.lat,
         long: log.long,
-        tracker: log.tracker,
-        team: log.team,
+        trackerId: log.trackerId,
+        teamId: log.teamId,
         distance: log.distance,
       };
       return { success: true, log: logData };

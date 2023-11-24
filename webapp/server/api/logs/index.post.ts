@@ -32,18 +32,14 @@ export default defineEventHandler(
           teamId: body.teamId,
           distance: body.distance,
         },
-        include: {
-          team: true,
-          tracker: true,
-        },
       });
       const logData: LogData = {
         id: log.id,
         datetime: log.datetime.toISOString(),
         lat: log.lat,
         long: log.long,
-        tracker: log.tracker,
-        team: log.team,
+        trackerId: log.trackerId,
+        teamId: log.teamId,
         distance: log.distance,
       };
 

@@ -15,8 +15,8 @@ const newLog = ref<LogUpdateInput>({
   datetime: props.log.datetime,
   lat: props.log.lat,
   long: props.log.long,
-  trackerId: props.log.tracker.id,
-  teamId: props.log.team?.id ?? null,
+  trackerId: props.log.trackerId,
+  teamId: props.log.teamId ?? null,
   distance: props.log.distance,
 });
 

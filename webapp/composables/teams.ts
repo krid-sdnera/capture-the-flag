@@ -5,6 +5,16 @@ import type {
 } from "~/server/types/team";
 import { usePageControls } from "./pageControls";
 
+interface FetchTeamComposable {
+  team: ComputedRef<TeamData | null>;
+  loading: Ref<boolean>;
+}
+
+// This is not good practice and you should never store state outside
+// the composable constructor function. I havent been able to work out
+// how to better define per entity composable fns.
+const fetchTeamComposable: Record<string, FetchTeamComposable> = {};
+
 export const useTeam = () => {
   const teamsState = useState<Record<string, TeamData>>("teams", () => ({}));
 
@@ -21,6 +31,34 @@ export const useTeam = () => {
     },
     removeTeam(teamId: number): void {
       delete teamsState.value[String(teamId)];
+    },
+    useFetchTeam: (teamId: number | null): FetchTeamComposable => {
+      if (teamId === null) {
+        return {
+          team: computed(() => null),
+          loading: ref(false),
+        };
+      }
+
+      if (fetchTeamComposable[teamId]) {
+        return fetchTeamComposable[teamId];
+      }
+
+      const { data, pending } = useFetch(`/api/teams/${teamId}`, {});
+
+      fetchTeamComposable[teamId] = {
+        team: useTeam().getTeam(teamId),
+        loading: pending,
+      };
+
+      watch(data, (value) => {
+        if (!value?.success) {
+          return;
+        }
+        useTeam().setTeam(value.team);
+      });
+
+      return fetchTeamComposable[teamId];
     },
     useListTeams: () => {
       const { currentPage, useUiPageControls } = usePageControls();

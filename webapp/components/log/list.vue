@@ -34,16 +34,7 @@ function logCreated(newId: number) {
         </tr>
       </thead>
       <tbody>
-        <tr v-for="log in displayLogs" :key="log.id">
-          <td>{{ log.id }}</td>
-          <td>{{ log.datetime }}</td>
-          <td>{{ log.lat }}</td>
-          <td>{{ log.long }}</td>
-          <td>{{ log.tracker.name }}</td>
-          <td>{{ log.team?.name ?? "none" }}</td>
-          <td>{{ log.distance }}</td>
-          <td><NuxtLink :to="`/logs/${log.id}`">show</NuxtLink></td>
-        </tr>
+        <LogRow v-for="log in displayLogs" :key="log.id" :log="log"> </LogRow>
       </tbody>
     </table>
 

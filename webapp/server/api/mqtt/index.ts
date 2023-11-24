@@ -79,10 +79,6 @@ async function handleTrackerMessageUp(message: MqttTrackerMessageUp) {
       trackerId: trackerData.id,
       distance: teamIdDistance.distance,
     },
-    include: {
-      team: true,
-      tracker: true,
-    },
   });
 
   // Send update via websocket.
@@ -91,8 +87,8 @@ async function handleTrackerMessageUp(message: MqttTrackerMessageUp) {
     datetime: log.datetime.toISOString(),
     lat: log.lat,
     long: log.long,
-    tracker: log.tracker,
-    team: log.team,
+    trackerId: log.trackerId,
+    teamId: log.teamId,
     distance: log.distance,
   };
   sendMessage("log", {

@@ -5,6 +5,16 @@ import type {
 } from "~/server/types/tracker";
 import { usePageControls } from "./pageControls";
 
+interface FetchTrackerComposable {
+  tracker: ComputedRef<TrackerData | null>;
+  loading: Ref<boolean>;
+}
+
+// This is not good practice and you should never store state outside
+// the composable constructor function. I havent been able to work out
+// how to better define per entity composable fns.
+const fetchTrackerComposable: Record<string, FetchTrackerComposable> = {};
+
 export const useTracker = () => {
   const trackersState = useState<Record<string, TrackerData>>(
     "trackers",
@@ -26,6 +36,33 @@ export const useTracker = () => {
     },
     removeTracker(trackerId: number): void {
       delete trackersState.value[String(trackerId)];
+    },
+    useFetchTracker: (trackerId: number | null): FetchTrackerComposable => {
+      if (trackerId === null) {
+        return {
+          tracker: computed(() => null),
+          loading: ref(false),
+        };
+      }
+
+      if (fetchTrackerComposable[trackerId]) {
+        return fetchTrackerComposable[trackerId];
+      }
+
+      const { data, pending } = useFetch(`/api/trackers/${trackerId}`, {});
+      watch(data, (value) => {
+        if (!value?.success) {
+          return;
+        }
+        useTracker().setTracker(value.tracker);
+      });
+
+      fetchTrackerComposable[trackerId] = {
+        tracker: useTracker().getTracker(trackerId),
+        loading: pending,
+      };
+
+      return fetchTrackerComposable[trackerId];
     },
     useListTrackers: () => {
       const { currentPage, useUiPageControls } = usePageControls();
