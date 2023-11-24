@@ -24,6 +24,9 @@ export default defineEventHandler(
       const perPage = 30;
 
       const logs = await prisma.trackerLog.findMany({
+        orderBy: {
+          datetime: "desc",
+        },
         skip: perPage * (page - 1),
         take: perPage,
       });

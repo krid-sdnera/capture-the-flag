@@ -1,5 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { connect } from "mqtt";
+import { useNuxtApp } from "nuxt/app";
 import prisma from "~/server/prisma";
 import { LogData } from "~/server/types/log";
 import {
@@ -11,19 +12,15 @@ import {
 import { useSocketServer } from "~/server/utils/websocket";
 const { sendMessage } = useSocketServer();
 
-// TODO define these somewhere.
-const username = "";
-const password = "";
-const applicationId = "";
-const tenantId = "";
+const { $config } = useNuxtApp();
 
-const client = connect("mqtt://test.mosquitto.org", {
-  username: username,
-  password: password,
+const client = connect($config.mqtt.host, {
+  username: $config.mqtt.username,
+  password: $config.mqtt.password,
 });
 
 client.on("connect", () => {
-  client.subscribe(`v3/${applicationId}@${tenantId}/devices/#`, (err) => {
+  client.subscribe(`v3/${$config.mqtt.username}/devices/#`, (err) => {
     if (err) {
       console.log(err);
     } else {
@@ -103,11 +100,25 @@ function parseUpLinkMessage(message: MqttTrackerMessageUp): {
   lat: number;
   long: number;
 } {
-  const uplink = JSON.parse(message.uplink_message.frm_payload);
+  const uplink = message.uplink_message.decoded_payload;
+
+  if (!uplink.latitude || !uplink.longitude) {
+    console.log(
+      `GPS trace missing lat or long ${
+        message.end_device_ids.device_id
+      } ${JSON.stringify(uplink)}`
+    );
+    throw new Error(
+      `GPS trace missing lat or long ${
+        message.end_device_ids.device_id
+      } ${JSON.stringify(uplink)}`
+    );
+  }
+
   return {
-    trackerId: uplink.trackerId,
-    lat: uplink.lat,
-    long: uplink.long,
+    trackerId: message.end_device_ids.device_id,
+    lat: uplink.latitude,
+    long: uplink.longitude,
   };
 }
 

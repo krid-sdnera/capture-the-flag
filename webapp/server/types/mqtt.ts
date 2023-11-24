@@ -29,6 +29,15 @@ export interface MqttTrackerMessageUp {
     session_key_id: string;
     f_port: number;
     frm_payload: string;
+    decoded_payload: {
+      ALARM_status: boolean;
+      BatV: number;
+      FW: number;
+      LON: boolean;
+      MD: string;
+      latitude: number;
+      longitude: number;
+    };
     rx_metadata: [
       {
         gateway_ids: {
