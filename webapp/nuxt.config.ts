@@ -10,5 +10,9 @@ export default defineNuxtConfig({
       username: process.env.MQTT_USERNAME,
       password: process.env.MQTT_API_KEY,
     },
+    public: {
+      flagCapturedDistance: 50,
+      flagWindowIntervalMinutes: 5,
+    },
   },
 });

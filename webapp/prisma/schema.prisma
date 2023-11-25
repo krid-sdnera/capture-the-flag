@@ -15,6 +15,7 @@ model Team {
   flagZoneLat  Float?
   flagZoneLong Float?
   logs         TrackerLog[]
+  flags        Flag[]
 }
 
 model Tracker {
@@ -22,6 +23,7 @@ model Tracker {
   name          String       @unique
   scoreModifier Float
   logs          TrackerLog[]
+  flags         Flag[]
 }
 
 model TrackerLog {
@@ -32,6 +34,20 @@ model TrackerLog {
   tracker   Tracker  @relation(fields: [trackerId], references: [id])
   trackerId Int
   team      Team?    @relation(fields: [teamId], references: [id])
-  teamId    Int
+  teamId    Int?
   distance  Int
+}
+
+model Flag {
+  id            Int      @id @default(autoincrement())
+  datetime      DateTime
+  windowSize    Int
+  scoreModifier Int
+  lat           Float
+  long          Float
+  tracker       Tracker  @relation(fields: [trackerId], references: [id])
+  trackerId     Int
+  team          Team?    @relation(fields: [teamId], references: [id])
+  teamId        Int?
+  distance      Int
 }

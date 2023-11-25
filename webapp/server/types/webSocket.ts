@@ -1,3 +1,4 @@
+import { FlagData } from "./flag";
 import { LogData } from "./log";
 import { TeamData } from "./team";
 import { TrackerData } from "./tracker";
@@ -5,10 +6,23 @@ import { TrackerData } from "./tracker";
 export const SocketServerRoomToken = "socket-server-room-token";
 
 export type MessageData =
+  | MessageDataFlag
   | MessageDataTeam
   | MessageDataTracker
   | MessageDataLog
   | MessageDataStatus;
+
+export type MessageDataFlag =
+  | {
+      type: "flag";
+      action: "create" | "update";
+      flag: FlagData;
+    }
+  | {
+      type: "flag";
+      action: "delete";
+      flagId: number;
+    };
 
 export type MessageDataTeam =
   | {

@@ -1,6 +1,5 @@
 import { Prisma } from "@prisma/client";
 import { connect } from "mqtt";
-import { useNuxtApp } from "nuxt/app";
 import prisma from "~/server/prisma";
 import { LogData } from "~/server/types/log";
 import {
@@ -8,19 +7,43 @@ import {
   MqttTrackerMessageJoin,
   MqttTrackerMessageUp,
 } from "~/server/types/mqtt";
+import { DateTime } from "luxon";
+
+interface ParsedUplinkMessage {
+  trackerId: string;
+  lat: number;
+  long: number;
+}
+
+interface ClosestTeam {
+  id: number;
+  distance: number;
+}
+
+interface FlagToInsert {
+  datetime: Date;
+  windowSize: number;
+  scoreModifier: number;
+  lat: number;
+  long: number;
+  trackerId: number;
+  teamId: number | null;
+  distance: number;
+}
 
 import { useSocketServer } from "~/server/utils/websocket";
+import { FlagData } from "~/server/types/flag";
 const { sendMessage } = useSocketServer();
 
-const { $config } = useNuxtApp();
+const config = useRuntimeConfig();
 
-const client = connect($config.mqtt.host, {
-  username: $config.mqtt.username,
-  password: $config.mqtt.password,
+const client = connect(config.mqtt.host, {
+  username: config.mqtt.username,
+  password: config.mqtt.password,
 });
 
 client.on("connect", () => {
-  client.subscribe(`v3/${$config.mqtt.username}/devices/#`, (err) => {
+  client.subscribe(`v3/${config.mqtt.username}/devices/#`, (err) => {
     if (err) {
       console.log(err);
     } else {
@@ -57,24 +80,39 @@ async function handleTrackerMessageUp(message: MqttTrackerMessageUp) {
   });
 
   // Calculate current tracker zone/team base.
-  const teamIdDistance = await getClosestTeamFlagZoneByLatLong(
+  const closestTeam = await getClosestTeamFlagZoneByLatLong(
     uplinkMessage.lat,
     uplinkMessage.long
   );
 
   console.log(
-    `GPS trace logged: tracker ${trackerData.name} team ${teamIdDistance.id} distance ${teamIdDistance.distance}`
+    `GPS trace logged: tracker ${trackerData.name} team ${closestTeam.id} distance ${closestTeam.distance}`
   );
 
   // Log data point.
+  await insertLog({ uplinkMessage, trackerData, closestTeam });
+
+  const flagWindows = await generateFlagWindows({
+    uplinkMessage,
+    trackerData,
+    closestTeam,
+  });
+  await insertFlags(flagWindows);
+}
+
+async function insertLog(context: {
+  uplinkMessage: ParsedUplinkMessage;
+  trackerData: { id: number };
+  closestTeam: ClosestTeam;
+}) {
   const log = await prisma.trackerLog.create({
     data: {
       datetime: new Date(Date.now()),
-      lat: uplinkMessage.lat,
-      long: uplinkMessage.long,
-      teamId: teamIdDistance.id,
-      trackerId: trackerData.id,
-      distance: teamIdDistance.distance,
+      lat: context.uplinkMessage.lat,
+      long: context.uplinkMessage.long,
+      teamId: context.closestTeam.id,
+      trackerId: context.trackerData.id,
+      distance: context.closestTeam.distance,
     },
   });
 
@@ -95,11 +133,129 @@ async function handleTrackerMessageUp(message: MqttTrackerMessageUp) {
   });
 }
 
-function parseUpLinkMessage(message: MqttTrackerMessageUp): {
-  trackerId: string;
-  lat: number;
-  long: number;
-} {
+async function generateFlagWindows(context: {
+  uplinkMessage: ParsedUplinkMessage;
+  trackerData: { id: number; scoreModifier: number };
+  closestTeam: ClosestTeam;
+}): Promise<FlagToInsert[]> {
+  const config = useRuntimeConfig();
+  const interval = config.public.flagWindowIntervalMinutes;
+
+  const flags: FlagToInsert[] = [];
+
+  const previousFlag = await prisma.flag.findFirst({
+    where: { trackerId: context.trackerData.id },
+    orderBy: { datetime: "desc" },
+    take: 1,
+  });
+
+  if (!previousFlag) {
+    // insert current log as first flag.
+    flags.push(buildFlag(interval, DateTime.now(), context));
+
+    return flags;
+  }
+
+  const windowedNow = windowDateTime(interval, DateTime.now());
+
+  const previousDatetime = DateTime.fromJSDate(previousFlag.datetime);
+
+  let windowedDatetime = windowDateTime(interval, previousDatetime).plus({
+    minutes: 5,
+  });
+
+  // If the minutes different denote the time is in the past and does not
+  // clash with the current bucket time, then create a flag object for that window.
+  while (minutesDiff(windowedDatetime, windowedNow) < 0) {
+    flags.push(buildFlag(interval, windowedDatetime, { previousFlag }));
+
+    windowedDatetime = windowedDatetime.plus({ minutes: 5 });
+  }
+
+  flags.push(buildFlag(interval, windowedNow, context));
+
+  return flags;
+}
+
+function minutesDiff(candidateWindow: DateTime, nowWindow: DateTime): number {
+  return candidateWindow.diff(nowWindow, "minutes").minutes;
+}
+
+function buildFlag(
+  interval: number,
+  datetime: DateTime,
+  context:
+    | {
+        uplinkMessage: ParsedUplinkMessage;
+        trackerData: { id: number; scoreModifier: number };
+        closestTeam: ClosestTeam;
+      }
+    | { previousFlag: FlagToInsert }
+): FlagToInsert {
+  if ("previousFlag" in context) {
+    return {
+      datetime: windowDateTime(interval, datetime).toJSDate(),
+      windowSize: context.previousFlag.windowSize,
+      scoreModifier: context.previousFlag.scoreModifier,
+      lat: context.previousFlag.lat,
+      long: context.previousFlag.long,
+      trackerId: context.previousFlag.trackerId,
+      teamId: context.previousFlag.teamId,
+      distance: context.previousFlag.distance,
+    };
+  }
+
+  return {
+    datetime: windowDateTime(interval, datetime).toJSDate(),
+    windowSize: interval,
+    scoreModifier: context.trackerData.scoreModifier,
+    lat: context.uplinkMessage.lat,
+    long: context.uplinkMessage.long,
+    trackerId: context.trackerData.id,
+    teamId: context.closestTeam.id,
+    distance: context.closestTeam.distance,
+  };
+}
+
+function windowDateTime(interval: number, datetime: DateTime): DateTime {
+  const rountedDownMinutes = Math.floor(datetime.minute / interval) * interval;
+
+  return datetime.set({
+    minute: rountedDownMinutes,
+    second: 0,
+    millisecond: 0,
+  });
+}
+
+async function insertFlags(flagsToInsert: FlagToInsert[]) {
+  for (const flagToInsert of flagsToInsert) {
+    const flag = await prisma.flag.create({
+      data: flagToInsert,
+    });
+
+    // Send update via websocket.
+    const flagData: FlagData = {
+      id: flag.id,
+      datetime: flag.datetime.toISOString(),
+      scoreModifier: flag.scoreModifier,
+      windowSize: flag.windowSize,
+      lat: flag.lat,
+      long: flag.long,
+      trackerId: flag.trackerId,
+      teamId: flag.teamId,
+      distance: flag.distance,
+    };
+    sendMessage("flag", {
+      type: "flag",
+      action: "create",
+      flag: flagData,
+    });
+  }
+}
+
+function parseUpLinkMessage(
+  message: MqttTrackerMessageUp
+): ParsedUplinkMessage {
   const uplink = message.uplink_message.decoded_payload;
 
   if (!uplink.latitude || !uplink.longitude) {
@@ -125,7 +281,7 @@ function parseUpLinkMessage(message: MqttTrackerMessageUp): {
 async function getClosestTeamFlagZoneByLatLong(
   lat: number,
   long: number
-): Promise<{ id: number; distance: number }> {
+): Promise<ClosestTeam> {
   try {
     await prisma.$executeRaw`CREATE EXTENSION IF NOT EXISTS cube;`;
     await prisma.$executeRaw`CREATE EXTENSION IF NOT EXISTS earthdistance;`;
@@ -138,7 +294,7 @@ async function getClosestTeamFlagZoneByLatLong(
      FROM "Team" as t
      ORDER BY distance ASC
      LIMIT 1
-     `) as { id: number; distance: number }[];
+     `) as ClosestTeam[];
 
     return { id: res4[0].id, distance: res4[0].distance };
   } catch (e) {

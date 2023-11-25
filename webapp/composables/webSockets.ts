@@ -1,4 +1,5 @@
 import type {
+  MessageDataFlag,
   MessageDataLog,
   MessageDataStatus,
   MessageDataTeam,
@@ -37,6 +38,7 @@ export const useWebSockets = () => {
 
       // Listen for messages
       socket.on("status", handleStatus);
+      socket.on("flag", handleFlag);
       socket.on("team", handleTeam);
       socket.on("tracker", handleTracker);
       socket.on("log", handleLog);
@@ -52,6 +54,25 @@ export const useWebSockets = () => {
 
 function handleStatus(data: MessageDataStatus) {
   log(data.message);
+}
+
+function handleFlag(data: MessageDataFlag) {
+  const { setFlag, removeFlag } = useFlag();
+
+  switch (data.action) {
+    case "create":
+      setFlag(data.flag);
+      log(`[flag][id ${data.flag.id}]: created`);
+      break;
+    case "update":
+      setFlag(data.flag);
+      log(`[flag][id ${data.flag.id}]: updated`);
+      break;
+    case "delete":
+      removeFlag(data.flagId);
+      log(`[flag][id ${data.flagId}]: deleted`);
+      break;
+  }
 }
 
 function handleTeam(data: MessageDataTeam) {
