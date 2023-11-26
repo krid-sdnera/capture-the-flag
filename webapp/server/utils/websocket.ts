@@ -1,19 +1,23 @@
-import { io } from "socket.io-client";
+import { Socket, io } from "socket.io-client";
 import { MessageData, SocketServerRoomToken } from "~/server/types/webSocket";
 
+let socket: Socket | null = null;
+
 export const useSocketServer = () => {
-  const socket = io(`http://localhost:3000`, {
-    auth: {
-      token: SocketServerRoomToken,
-    },
-  });
-  // Connection opened
-  socket.on("connect", () => {
-    console.log("[server-client][connection]: connection successful");
-  });
-  socket.on("disconnected", () => {
-    console.log("[server-client][connection]: disconnected");
-  });
+  if (!socket) {
+    socket = io(`http://localhost:3000`, {
+      auth: {
+        token: SocketServerRoomToken,
+      },
+    });
+    // Connection opened
+    socket.on("connect", () => {
+      console.log("[server-client][connection]: connection successful");
+    });
+    socket.on("disconnected", () => {
+      console.log("[server-client][connection]: disconnected");
+    });
+  }
 
   return {
     socket,
