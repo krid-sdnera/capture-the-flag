@@ -15,10 +15,17 @@ interface ResponseFailure {
   message: string;
 }
 
+interface QueryParams {
+  page: string;
+  trackerId: string;
+  teamId: string;
+}
+
 export default defineEventHandler(
   async (event): Promise<ResponseSuccess | ResponseFailure> => {
     try {
-      const params = getQuery(event);
+      const config = useRuntimeConfig();
+      const params = getQuery<Partial<QueryParams>>(event);
 
       const page = Number(params.page) || 1;
       const perPage = 30;
@@ -29,9 +36,24 @@ export default defineEventHandler(
         orderBy: {
           datetime: "desc",
         },
+        where: {
+          trackerId: params.trackerId ? Number(params.trackerId) : undefined,
+          teamId: params.teamId ? Number(params.teamId) : undefined,
+          distance: params.teamId
+            ? { lte: config.public.flagCapturedDistance }
+            : undefined,
+        },
       });
 
-      const flagsCount = await prisma.flag.count({});
+      const flagsCount = await prisma.flag.count({
+        where: {
+          trackerId: params.trackerId ? Number(params.trackerId) : undefined,
+          teamId: params.teamId ? Number(params.teamId) : undefined,
+          distance: params.teamId
+            ? { lte: config.public.flagCapturedDistance }
+            : undefined,
+        },
+      });
 
       return {
         success: true,

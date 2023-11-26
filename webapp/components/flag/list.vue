@@ -1,7 +1,21 @@
 <script setup lang="ts">
+import type { TeamData } from "~/server/types/team";
+import type { TrackerData } from "~/server/types/tracker";
+import { parseQueryParamAsNumber } from "~/utils/queryParams";
+
+const props = defineProps<{
+  team?: TeamData;
+  tracker?: TrackerData;
+}>();
+
 const { useListFlags } = useFlag();
 const { displayFlags, uiPageControls, refresh, loading, error, errorMessage } =
-  useListFlags();
+  useListFlags({
+    where: {
+      teamId: props.team?.id ?? parseQueryParamAsNumber("teamId"),
+      trackerId: props.tracker?.id ?? parseQueryParamAsNumber("trackerId"),
+    },
+  });
 
 const showFlagCreate = useState("showFlagCreate", () => false);
 function flagCreated(newId: number) {
@@ -33,6 +47,7 @@ function flagCreated(newId: number) {
           <th>tracker</th>
           <th>team</th>
           <th>distance</th>
+          <th>actions</th>
         </tr>
       </thead>
       <tbody>
@@ -43,8 +58,14 @@ function flagCreated(newId: number) {
           <td>{{ flag.scoreModifier }}</td>
           <td>{{ flag.lat }}</td>
           <td>{{ flag.long }}</td>
-          <td>{{ flag.trackerId }}</td>
-          <td>{{ flag.teamId }}</td>
+          <td>
+            <NuxtLink :to="`/trackers/${flag.trackerId}`">{{
+              flag.trackerId
+            }}</NuxtLink>
+          </td>
+          <td>
+            <NuxtLink :to="`/teams/${flag.teamId}`">{{ flag.teamId }}</NuxtLink>
+          </td>
           <td>{{ flag.distance }}</td>
           <td><NuxtLink :to="`/flags/${flag.id}`">show</NuxtLink></td>
         </tr>

@@ -1,7 +1,21 @@
 <script setup lang="ts">
+import type { TeamData } from "~/server/types/team";
+import type { TrackerData } from "~/server/types/tracker";
+import { parseQueryParamAsNumber } from "~/utils/queryParams";
+
+const props = defineProps<{
+  team?: TeamData;
+  tracker?: TrackerData;
+}>();
+
 const { useListLogs } = useLog();
 const { displayLogs, uiPageControls, refresh, loading, error, errorMessage } =
-  useListLogs();
+  useListLogs({
+    where: {
+      teamId: props.team?.id ?? parseQueryParamAsNumber("teamId"),
+      trackerId: props.tracker?.id ?? parseQueryParamAsNumber("trackerId"),
+    },
+  });
 
 const showLogCreate = useState("showLogCreate", () => false);
 function logCreated(newId: number) {
@@ -31,6 +45,7 @@ function logCreated(newId: number) {
           <th>tracker</th>
           <th>team</th>
           <th>distance</th>
+          <th>actions</th>
         </tr>
       </thead>
       <tbody>

@@ -60,11 +60,17 @@ export const useFlag = () => {
 
       return fetchFlagComposable[flagId];
     },
-    useListFlags: () => {
+    useListFlags: (options?: {
+      where?: { teamId?: number; trackerId?: number };
+    }) => {
       const { currentPage, useUiPageControls } = usePageControls();
 
       const { data, refresh, pending } = useFetch(`/api/flags`, {
-        params: { page: currentPage },
+        params: {
+          page: currentPage,
+          teamId: options?.where?.teamId ?? undefined,
+          trackerId: options?.where?.trackerId ?? undefined,
+        },
       });
 
       const uiPageControls = useUiPageControls(

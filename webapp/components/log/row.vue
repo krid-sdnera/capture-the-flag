@@ -19,14 +19,22 @@ const { tracker, loading: trackerLoading } = useFetchTracker(log.trackerId);
     <td>{{ log.datetime }}</td>
     <td>{{ log.lat }}</td>
     <td>{{ log.long }}</td>
-    <td v-if="!trackerLoading">
-      {{ tracker?.name }}
+    <td>
+      <NuxtLink :to="`/trackers/${log.trackerId}`">
+        <span v-if="!trackerLoading">
+          {{ tracker?.name }}
+        </span>
+        <span v-else>Loading</span>
+      </NuxtLink>
     </td>
-    <td v-else>Loading</td>
-    <td v-if="!teamLoading">
-      {{ team?.name }}
+    <td>
+      <NuxtLink :to="`/teams/${log.teamId}`">
+        <span v-if="!teamLoading">
+          {{ team?.name }}
+        </span>
+        <span v-else>Loading</span>
+      </NuxtLink>
     </td>
-    <td v-else>Loading</td>
     <td>{{ log.distance }}</td>
     <td><NuxtLink :to="`/logs/${log.id}`">show</NuxtLink></td>
   </tr>

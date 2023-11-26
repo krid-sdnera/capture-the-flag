@@ -28,6 +28,9 @@ function teamCreated(newId: number) {
           <th>name</th>
           <th>lat</th>
           <th>long</th>
+          <th>flags</th>
+          <th>logs</th>
+          <th>actions</th>
         </tr>
       </thead>
       <tbody>
@@ -36,6 +39,12 @@ function teamCreated(newId: number) {
           <td>{{ team.name }}</td>
           <td>{{ team.flagZoneLat }}</td>
           <td>{{ team.flagZoneLong }}</td>
+          <td>
+            <NuxtLink :to="`/flags?teamId=${team.id}`">view flags</NuxtLink>
+          </td>
+          <td>
+            <NuxtLink :to="`/logs?teamId=${team.id}`">view logs</NuxtLink>
+          </td>
           <td><NuxtLink :to="`/teams/${team.id}`">show</NuxtLink></td>
         </tr>
       </tbody>

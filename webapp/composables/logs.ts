@@ -22,11 +22,17 @@ export const useLog = () => {
     removeLog(logId: number): void {
       delete logsState.value[String(logId)];
     },
-    useListLogs: () => {
+    useListLogs: (options?: {
+      where?: { teamId?: number; trackerId?: number };
+    }) => {
       const { currentPage, useUiPageControls } = usePageControls();
 
       const { data, refresh, pending } = useFetch(`/api/logs`, {
-        params: { page: currentPage },
+        params: {
+          page: currentPage,
+          teamId: options?.where?.teamId ?? undefined,
+          trackerId: options?.where?.trackerId ?? undefined,
+        },
       });
 
       const uiPageControls = useUiPageControls(

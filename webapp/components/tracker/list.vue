@@ -36,6 +36,9 @@ function trackerCreated(newId: number) {
           <th>id</th>
           <th>name</th>
           <th>scoreModifier</th>
+          <th>flags</th>
+          <th>logs</th>
+          <th>actions</th>
         </tr>
       </thead>
       <tbody>
@@ -43,6 +46,14 @@ function trackerCreated(newId: number) {
           <td>{{ tracker.id }}</td>
           <td>{{ tracker.name }}</td>
           <td>x{{ tracker.scoreModifier }}</td>
+          <td>
+            <NuxtLink :to="`/flags?trackerId=${tracker.id}`">
+              view flags
+            </NuxtLink>
+          </td>
+          <td>
+            <NuxtLink :to="`/logs?trackerId=${tracker.id}`">view logs</NuxtLink>
+          </td>
           <td><NuxtLink :to="`/trackers/${tracker.id}`">show</NuxtLink></td>
         </tr>
       </tbody>

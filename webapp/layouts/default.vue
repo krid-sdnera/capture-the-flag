@@ -27,7 +27,7 @@ const breadcrumbs = computed<Breadcrumb[]>(
           <li><NuxtLink :to="`/trackers`">Trackers</NuxtLink></li>
           <li><NuxtLink :to="`/flags`">Flags</NuxtLink></li>
           <li><NuxtLink :to="`/logs`">Logs</NuxtLink></li>
-          <li><NuxtLink :to="`/stats`">Stats</NuxtLink></li>
+          <!-- <li><NuxtLink :to="`/stats`">Stats</NuxtLink></li> -->
         </ul>
       </div>
     </header>
@@ -42,9 +42,16 @@ const breadcrumbs = computed<Breadcrumb[]>(
           </li>
         </ul>
       </div>
-      <slot />
 
-      <WebSocket></WebSocket>
+      <div class="main-container">
+        <div class="page-container">
+          <slot />
+        </div>
+
+        <div class="websocket-container">
+          <WebSocket></WebSocket>
+        </div>
+      </div>
     </main>
   </div>
 </template>
@@ -115,5 +122,35 @@ header .navigation-container ul li {
 
 main {
   margin: 20px;
+  width: 100%;
+}
+
+.main-container {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+.page-container {
+  flex-grow: 1;
+}
+.websocket-container {
+  flex-shrink: 1;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+td,
+th {
+  border: 1px solid #555;
+  padding: 3px 10px;
+}
+th {
+  background-color: #1d483a; /*MVD dark border green*/
+}
+tbody tr:hover td,
+tbody tr:hover th {
+  background-color: #94c69780; /*MVD light green with 50% alpha*/
 }
 </style>
