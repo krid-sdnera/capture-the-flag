@@ -164,12 +164,18 @@ async function generateFlagWindows(context: {
     minutes: 5,
   });
 
-  // If the minutes different denote the time is in the past and does not
-  // clash with the current bucket time, then create a flag object for that window.
-  while (minutesDiff(windowedDatetime, windowedNow) < 0) {
-    flags.push(buildFlag(interval, windowedDatetime, { previousFlag }));
+  // Check if current time window is newer than the "keep alive time" ago.
+  // If it is older, then we dont want to fill in all the gaps and just want
+  // a new "first" trace recorded.
+  const flagKeepAliveMinutesAgo = config.public.flagKeepAliveMinutes * -1.05;
+  if (flagKeepAliveMinutesAgo < minutesDiff(windowedDatetime, windowedNow)) {
+    // If the difference in minutes is negative, the trace is in the past and does not
+    // clash with the current bucket time, then create a flag object for that window.
+    while (minutesDiff(windowedDatetime, windowedNow) < 0) {
+      flags.push(buildFlag(interval, windowedDatetime, { previousFlag }));
 
-    windowedDatetime = windowedDatetime.plus({ minutes: 5 });
+      windowedDatetime = windowedDatetime.plus({ minutes: 5 });
+    }
   }
 
   flags.push(buildFlag(interval, windowedNow, context));

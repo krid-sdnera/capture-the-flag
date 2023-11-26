@@ -5,17 +5,35 @@ import type {
   MessageDataTeam,
   MessageDataTracker,
 } from "~/server/types/webSocket";
+import { DateTime } from "luxon";
 
 let socket: ReturnType<typeof useSocket> | null = null;
 
-const logs = ref<string[]>([]);
-let lastTime = Date.now();
-const log = (message: string) => {
-  console.log(message);
-  const now = Date.now();
-  const timeTaken = now - lastTime;
-  logs.value.push(`${message} ${timeTaken > 0 ? `(+${timeTaken}ms)` : ""}`);
-  lastTime = now;
+interface Entity {
+  type: "flag" | "log" | "team" | "tracker";
+  id: number;
+}
+export type WebSocketLog = {
+  datetime: DateTime;
+} & WebSocketLogInput;
+
+interface WebSocketLogInput {
+  entity?: Entity;
+  related?: Entity[];
+  message: string;
+}
+
+const logs = ref<WebSocketLog[]>([]);
+
+const log = (message: WebSocketLogInput) => {
+  if (logs.value.length > 30) {
+    logs.value.splice(0, logs.value.length - 30);
+  }
+
+  logs.value.push({
+    ...message,
+    datetime: DateTime.now(),
+  });
 };
 
 export const useWebSockets = () => {
@@ -30,10 +48,10 @@ export const useWebSockets = () => {
 
       // Connection opened
       socket.on("connect", () => {
-        log("[connection]: connection successful");
+        log({ message: "[connection]: connection successful" });
       });
       socket.on("disconnected", () => {
-        log("[connection]: disconnected");
+        log({ message: "[connection]: disconnected" });
       });
 
       // Listen for messages
@@ -53,7 +71,22 @@ export const useWebSockets = () => {
 };
 
 function handleStatus(data: MessageDataStatus) {
-  log(data.message);
+  log({ message: data.message });
+}
+
+function buildRelated(entity: {
+  teamId?: number | null;
+  trackerId?: number | null;
+}): Entity[] {
+  const related: Entity[] = [];
+  if (entity.teamId) {
+    related.push({ type: "team", id: entity.teamId });
+  }
+  if (entity.trackerId) {
+    related.push({ type: "tracker", id: entity.trackerId });
+  }
+
+  return related;
 }
 
 function handleFlag(data: MessageDataFlag) {
@@ -62,15 +95,28 @@ function handleFlag(data: MessageDataFlag) {
   switch (data.action) {
     case "create":
       setFlag(data.flag);
-      log(`[flag][id ${data.flag.id}]: created`);
+
+      log({
+        entity: { type: "flag", id: data.flag.id },
+        related: buildRelated(data.flag),
+        message: "created",
+      });
       break;
     case "update":
       setFlag(data.flag);
-      log(`[flag][id ${data.flag.id}]: updated`);
+      log({
+        entity: { type: "flag", id: data.flag.id },
+        related: buildRelated(data.flag),
+        message: "updated",
+      });
       break;
     case "delete":
       removeFlag(data.flagId);
-      log(`[flag][id ${data.flagId}]: deleted`);
+      log({
+        entity: { type: "flag", id: data.flagId },
+        related: [],
+        message: "deleted",
+      });
       break;
   }
 }
@@ -81,15 +127,27 @@ function handleTeam(data: MessageDataTeam) {
   switch (data.action) {
     case "create":
       setTeam(data.team);
-      log(`[team][id ${data.team.id}]: created`);
+      log({
+        entity: { type: "team", id: data.team.id },
+        related: [],
+        message: "created",
+      });
       break;
     case "update":
       setTeam(data.team);
-      log(`[team][id ${data.team.id}]: updated`);
+      log({
+        entity: { type: "team", id: data.team.id },
+        related: [],
+        message: "updated",
+      });
       break;
     case "delete":
       removeTeam(data.teamId);
-      log(`[team][id ${data.teamId}]: deleted`);
+      log({
+        entity: { type: "team", id: data.teamId },
+        related: [],
+        message: "deleted",
+      });
       break;
   }
 }
@@ -100,15 +158,27 @@ function handleTracker(data: MessageDataTracker) {
   switch (data.action) {
     case "create":
       setTracker(data.tracker);
-      log(`[tracker][id ${data.tracker.id}]: created`);
+      log({
+        entity: { type: "tracker", id: data.tracker.id },
+        related: [],
+        message: "created",
+      });
       break;
     case "update":
       setTracker(data.tracker);
-      log(`[tracker][id ${data.tracker.id}]: updated`);
+      log({
+        entity: { type: "tracker", id: data.tracker.id },
+        related: [],
+        message: "updated",
+      });
       break;
     case "delete":
       removeTracker(data.trackerId);
-      log(`[tracker][id ${data.trackerId}]: deleted`);
+      log({
+        entity: { type: "tracker", id: data.trackerId },
+        related: [],
+        message: "deleted",
+      });
       break;
   }
 }
@@ -119,15 +189,27 @@ function handleLog(data: MessageDataLog) {
   switch (data.action) {
     case "create":
       setLog(data.log);
-      log(`[log][id ${data.log.id}]: created`);
+      log({
+        entity: { type: "log", id: data.log.id },
+        related: buildRelated(data.log),
+        message: "created",
+      });
       break;
     case "update":
       setLog(data.log);
-      log(`[log][id ${data.log.id}]: updated`);
+      log({
+        entity: { type: "log", id: data.log.id },
+        related: buildRelated(data.log),
+        message: "updated",
+      });
       break;
     case "delete":
       removeLog(data.logId);
-      log(`[log][id ${data.logId}]: deleted`);
+      log({
+        entity: { type: "log", id: data.logId },
+        related: [],
+        message: "deleted",
+      });
       break;
   }
 }

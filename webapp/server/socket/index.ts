@@ -11,6 +11,7 @@ import { SocketServerRoomToken } from "../types/webSocket";
 
 export default defineIOHandler((io) => {
   io.on("connection", (socket) => {
+    console.log(`[server][connection]`, socket.id, "connected");
     if (socket.handshake.auth.token === SocketServerRoomToken) {
       socket.join("server room");
       socket.onAny((eventName, ...args) => {

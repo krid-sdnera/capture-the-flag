@@ -12,7 +12,8 @@ export default defineNuxtConfig({
     },
     public: {
       flagCapturedDistance: 50,
-      flagWindowIntervalMinutes: 5,
+      flagWindowIntervalMinutes: 1,
+      flagKeepAliveMinutes: 60,
     },
   },
 });
