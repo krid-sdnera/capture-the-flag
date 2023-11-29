@@ -1,6 +1,16 @@
+export const ActionOptions = {
+  violation: "Violation: General",
+  violationFlag: "Violation: Flag",
+  respawn: "Respawn",
+  death: "Death",
+  chance: "Game of Chance",
+  other: "Other",
+} as const;
+export type ActionOptionKeys = keyof typeof ActionOptions;
+
 export interface ActionCreateInput {
   datetime: string;
-  action: "violation" | "respawn" | "death" | "chance" | "other";
+  action: ActionOptionKeys;
   score: number;
   description: string;
   teamId: number;
@@ -9,7 +19,7 @@ export interface ActionCreateInput {
 export interface ActionUpdateInput {
   id: number;
   datetime: string;
-  action: "violation" | "respawn" | "death" | "chance" | "other";
+  action: ActionOptionKeys;
   score: number;
   description: string;
   teamId: number;
@@ -18,7 +28,7 @@ export interface ActionUpdateInput {
 export interface ActionData {
   id: number;
   datetime: string;
-  action: "violation" | "respawn" | "death" | "chance" | "other";
+  action: ActionOptionKeys;
   score: number;
   description: string;
   teamId: number;

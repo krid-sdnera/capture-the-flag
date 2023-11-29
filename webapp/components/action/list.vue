@@ -38,6 +38,7 @@ function actionCreated(newId: number) {
     <ActionCreate
       v-if="showActionCreate"
       @created="actionCreated"
+      :team="props.team"
     ></ActionCreate>
 
     <div v-if="error">Unable to load action list {{ errorMessage }}</div>

@@ -1,5 +1,13 @@
 <script setup lang="ts">
 import type { LogCreateInput } from "~/server/types/log";
+import type { TeamData } from "~/server/types/team";
+import type { TrackerData } from "~/server/types/tracker";
+
+const props = defineProps<{
+  team?: TeamData;
+  tracker?: TrackerData;
+}>();
+
 const { useCreateLog } = useLog();
 const { create, created, loading, error, errorMessage } = useCreateLog();
 
@@ -10,8 +18,8 @@ const newLog = ref<LogCreateInput>({
   datetime: new Date().toISOString(),
   lat: 0,
   long: 0,
-  trackerId: 0,
-  teamId: 0,
+  trackerId: props.tracker?.id ?? 0,
+  teamId: props.team?.id ?? 0,
   distance: 0,
 });
 

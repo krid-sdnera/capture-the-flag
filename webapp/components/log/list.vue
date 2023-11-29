@@ -31,7 +31,12 @@ function logCreated(newId: number) {
     <button type="button" @click="showLogCreate = !showLogCreate">
       {{ showLogCreate ? "Hide" : "Show" }} Create Log
     </button>
-    <LogCreate v-if="showLogCreate" @created="logCreated"></LogCreate>
+    <LogCreate
+      v-if="showLogCreate"
+      @created="logCreated"
+      :tracker="props.tracker"
+      :team="props.team"
+    ></LogCreate>
 
     <div v-if="error">Unable to load log list {{ errorMessage }}</div>
     <div v-else-if="loading">Loading Logs</div>

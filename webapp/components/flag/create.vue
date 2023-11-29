@@ -1,5 +1,13 @@
 <script setup lang="ts">
 import type { FlagCreateInput } from "~/server/types/flag";
+import type { TeamData } from "~/server/types/team";
+import type { TrackerData } from "~/server/types/tracker";
+
+const props = defineProps<{
+  team?: TeamData;
+  tracker?: TrackerData;
+}>();
+
 const { useCreateFlag } = useFlag();
 const { create, created, loading, error, errorMessage } = useCreateFlag();
 
@@ -12,8 +20,8 @@ const newFlag = ref<FlagCreateInput>({
   scoreModifier: 0,
   lat: 0,
   long: 0,
-  trackerId: 0,
-  teamId: 0,
+  trackerId: props.tracker?.id ?? 0,
+  teamId: props.team?.id ?? 0,
   distance: 0,
 });
 

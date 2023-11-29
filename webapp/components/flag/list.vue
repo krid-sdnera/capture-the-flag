@@ -31,7 +31,12 @@ function flagCreated(newId: number) {
     <button type="button" @click="showFlagCreate = !showFlagCreate">
       {{ showFlagCreate ? "Hide" : "Show" }} Create Flag
     </button>
-    <FlagCreate v-if="showFlagCreate" @created="flagCreated"></FlagCreate>
+    <FlagCreate
+      v-if="showFlagCreate"
+      @created="flagCreated"
+      :tracker="props.tracker"
+      :team="props.team"
+    ></FlagCreate>
 
     <div v-if="error">Unable to load flag list {{ errorMessage }}</div>
     <div v-else-if="loading">Loading Flags</div>

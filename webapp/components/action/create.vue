@@ -1,5 +1,11 @@
 <script setup lang="ts">
-import type { ActionCreateInput } from "~/server/types/action";
+import { ActionOptions, type ActionCreateInput } from "~/server/types/action";
+import type { TeamData } from "~/server/types/team";
+
+const props = defineProps<{
+  team?: TeamData;
+}>();
+
 const { useCreateAction } = useAction();
 const { create, created, loading, error, errorMessage } = useCreateAction();
 
@@ -10,7 +16,7 @@ const newAction = ref<ActionCreateInput>({
   datetime: new Date().toISOString(),
   action: "other",
   score: 0,
-  teamId: 0,
+  teamId: props.team?.id ?? 0,
   description: "",
 });
 
@@ -36,11 +42,9 @@ async function submitCreate() {
     <div>
       <label for="form-action-update-action">action</label>
       <select id="form-action-update-action" v-model="newAction.action">
-        <option value="violation">Violation</option>
-        <option value="respawn">Respawn</option>
-        <option value="death">Death</option>
-        <option value="chance">Game of Chance</option>
-        <option value="other">Other</option>
+        <option v-for="(label, key) in ActionOptions" :key="key" :value="key">
+          {{ label }}
+        </option>
       </select>
     </div>
     <div>
