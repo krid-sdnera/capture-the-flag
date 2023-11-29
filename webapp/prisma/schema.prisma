@@ -16,6 +16,7 @@ model Team {
   flagZoneLong Float?
   logs         TrackerLog[]
   flags        Flag[]
+  actions      Action[]
 }
 
 model Tracker {
@@ -50,4 +51,14 @@ model Flag {
   team          Team?    @relation(fields: [teamId], references: [id])
   teamId        Int?
   distance      Int
+}
+
+model Action {
+  id          Int      @id @default(autoincrement())
+  datetime    DateTime
+  action      String
+  score       Float
+  description String
+  team        Team     @relation(fields: [teamId], references: [id])
+  teamId      Int
 }

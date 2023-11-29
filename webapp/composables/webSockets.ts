@@ -1,4 +1,5 @@
 import type {
+  MessageDataAction,
   MessageDataFlag,
   MessageDataLog,
   MessageDataStatus,
@@ -10,7 +11,7 @@ import { DateTime } from "luxon";
 let socket: ReturnType<typeof useSocket> | null = null;
 
 interface Entity {
-  type: "flag" | "log" | "team" | "tracker";
+  type: "action" | "flag" | "log" | "team" | "tracker";
   id: number;
 }
 export type WebSocketLog = {
@@ -56,6 +57,7 @@ export const useWebSockets = () => {
 
       // Listen for messages
       socket.on("status", handleStatus);
+      socket.on("action", handleAction);
       socket.on("flag", handleFlag);
       socket.on("team", handleTeam);
       socket.on("tracker", handleTracker);
@@ -89,6 +91,37 @@ function buildRelated(entity: {
   return related;
 }
 
+function handleAction(data: MessageDataAction) {
+  const { setAction, removeAction } = useAction();
+
+  switch (data.action) {
+    case "create":
+      setAction(data.actionData);
+
+      log({
+        entity: { type: "action", id: data.actionData.id },
+        related: buildRelated(data.actionData),
+        message: "created",
+      });
+      break;
+    case "update":
+      setAction(data.actionData);
+      log({
+        entity: { type: "action", id: data.actionData.id },
+        related: buildRelated(data.actionData),
+        message: "updated",
+      });
+      break;
+    case "delete":
+      removeAction(data.actionId);
+      log({
+        entity: { type: "action", id: data.actionId },
+        related: [],
+        message: "deleted",
+      });
+      break;
+  }
+}
 function handleFlag(data: MessageDataFlag) {
   const { setFlag, removeFlag } = useFlag();
 

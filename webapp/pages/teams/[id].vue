@@ -64,6 +64,7 @@ function teamDeleted(id: number) {
     <div>Lat: {{ data.team.flagZoneLat }}</div>
     <div>Long: {{ data.team.flagZoneLong }}</div>
 
+    <ActionList :team="data.team"></ActionList>
     <FlagList :team="data.team"></FlagList>
   </div>
   <div v-else>loading or error</div>
