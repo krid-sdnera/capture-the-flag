@@ -16,14 +16,14 @@ const logContainer = ref<VueElement | null>(null);
 function scrollToBottom() {
   const el = logContainer;
 
-  console.log(el.value);
+  // console.log(el.value);
   if (el.value) {
     const lastChild = el.value.querySelector(".log-row:last-child");
     const scroller = el.value.querySelector(".scroller");
 
-    console.log(lastChild, scroller);
+    // console.log(lastChild, scroller);
     if (lastChild && scroller) {
-      console.log(lastChild.offsetTop);
+      // console.log(lastChild.offsetTop);
       scroller.scroll(0, lastChild.offsetTop);
     }
   }
@@ -68,7 +68,7 @@ watch(
           </code>
           <code>{{ log.message }}</code>
           <code class="log-datetime">
-            {{ log.datetime.toFormat("yy-mm-dd hh:MM:ss") }}
+            {{ log.datetime.toFormat("yy-MM-dd hh:mm:ss") }}
           </code>
         </div>
       </div>

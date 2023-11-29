@@ -17,12 +17,17 @@ definePageMeta({
       <h2>Capture the Flag: A game of stealth of tactics</h2>
     </div>
 
+    <h3>View the Game Map:</h3>
+    <ul>
+      <li><NuxtLink :to="`/map`">Map</NuxtLink></li>
+    </ul>
+
     <h3>View the teams playing:</h3>
     <ul>
       <li><NuxtLink :to="`/teams`">Team list</NuxtLink></li>
     </ul>
 
-    <h3>Locate the current locaation of the Flags:</h3>
+    <h3>Locate Flags:</h3>
     <ul>
       <li><NuxtLink :to="`/trackers`">Tracker list</NuxtLink></li>
     </ul>
@@ -37,8 +42,6 @@ definePageMeta({
       </li>
       <li><NuxtLink :to="`/logs`">Log list</NuxtLink></li>
     </ul>
-
-    <Map></Map>
   </div>
 </template>
 
