@@ -4,6 +4,7 @@ import type {
   FlagUpdateInput,
 } from "~/server/types/flag";
 import { usePageControls } from "./pageControls";
+import { DateTime } from "luxon";
 
 interface FetchFlagComposable {
   flag: ComputedRef<FlagData | null>;
@@ -110,7 +111,7 @@ export const useFlag = () => {
         }),
       };
     },
-    useListAllFlags: () => {
+    useListAllFlags: (maxAge: number = 1000) => {
       const error = ref<boolean>(false);
       const errorMessage = ref<string | undefined>(undefined);
 
@@ -131,6 +132,15 @@ export const useFlag = () => {
 
         if (data.value.maxPages <= page) {
           return flagIds; // Flag Ids from last page.
+        }
+
+        if (
+          maxAge <
+          DateTime.fromISO(data.value.flags[0].datetime)
+            .diffNow("minutes")
+            .negate().minutes
+        ) {
+          return flagIds; // Dont fetch further pages, they are too long ago.
         }
 
         return [
