@@ -161,7 +161,7 @@ async function generateFlagWindows(context: {
   const previousDatetime = DateTime.fromJSDate(previousFlag.datetime);
 
   let windowedDatetime = windowDateTime(interval, previousDatetime).plus({
-    minutes: 5,
+    minutes: config.public.flagWindowIntervalMinutes,
   });
 
   // Check if current time window is newer than the "keep alive time" ago.
@@ -174,7 +174,9 @@ async function generateFlagWindows(context: {
     while (minutesDiff(windowedDatetime, windowedNow) < 0) {
       flags.push(buildFlag(interval, windowedDatetime, { previousFlag }));
 
-      windowedDatetime = windowedDatetime.plus({ minutes: 5 });
+      windowedDatetime = windowedDatetime.plus({
+        minutes: config.public.flagWindowIntervalMinutes,
+      });
     }
   }
 
