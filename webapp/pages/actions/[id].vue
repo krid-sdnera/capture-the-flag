@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useBreadcrumbs } from "~/types/breadcrumbs";
+import { DateTime } from "luxon";
 
 useHead({
   title: "Action",
@@ -40,7 +41,7 @@ function actionDeleted(id: number) {
 
 <template>
   <div v-if="data && data.success && !pending">
-    <h2>Action: {{ data.action.trackerId }}</h2>
+    <h2>Action: {{ data.action.teamId }}</h2>
     <button type="button" @click="showActionUpdate = !showActionUpdate">
       {{ showActionUpdate ? "Hide" : "Show" }} Update Action
     </button>
@@ -60,7 +61,14 @@ function actionDeleted(id: number) {
     ></ActionDelete>
 
     <div>ID: {{ data.action.id }}</div>
-    <div>Datetime: {{ data.action.datetime }}</div>
+    <div>
+      Datetime:
+      {{
+        DateTime.fromISO(data.action.datetime).toLocaleString(
+          DateTime.DATETIME_SHORT
+        )
+      }}
+    </div>
     <div>Action: {{ data.action.action }}</div>
     <div>Score {{ data.action.score }}</div>
     <div>Description {{ data.action.description }}</div>

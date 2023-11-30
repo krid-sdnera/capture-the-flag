@@ -2,6 +2,7 @@
 import type { TeamData } from "~/server/types/team";
 import type { TrackerData } from "~/server/types/tracker";
 import { parseQueryParamAsNumber } from "~/utils/queryParams";
+import { DateTime } from "luxon";
 
 const props = defineProps<{
   team?: TeamData;
@@ -58,7 +59,13 @@ function flagCreated(newId: number) {
       <tbody>
         <tr v-for="flag in displayFlags" :key="flag.id">
           <td>{{ flag.id }}</td>
-          <td>{{ flag.datetime }}</td>
+          <td>
+            {{
+              DateTime.fromISO(flag.datetime).toLocaleString(
+                DateTime.DATETIME_SHORT
+              )
+            }}
+          </td>
           <td>{{ flag.windowSize }}</td>
           <td>{{ flag.scoreModifier }}</td>
           <td>{{ flag.lat }}</td>

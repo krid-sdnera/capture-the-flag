@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useBreadcrumbs } from "~/types/breadcrumbs";
+import { DateTime } from "luxon";
 
 useHead({
   title: "Flag",
@@ -60,7 +61,14 @@ function flagDeleted(id: number) {
     ></FlagDelete>
 
     <div>ID: {{ data.flag.id }}</div>
-    <div>Datetime: {{ data.flag.datetime }}</div>
+    <div>
+      Datetime:
+      {{
+        DateTime.fromISO(data.flag.datetime).toLocaleString(
+          DateTime.DATETIME_SHORT
+        )
+      }}
+    </div>
     <div>WindowSize: {{ data.flag.windowSize }}</div>
     <div>ScoreModifier: {{ data.flag.scoreModifier }}</div>
     <div>Lat: {{ data.flag.lat }}</div>

@@ -2,6 +2,7 @@
 import type { TeamData } from "~/server/types/team";
 import type { TrackerData } from "~/server/types/tracker";
 import { parseQueryParamAsNumber } from "~/utils/queryParams";
+import { DateTime } from "luxon";
 
 const props = defineProps<{
   team?: TeamData;
@@ -58,7 +59,13 @@ function actionCreated(newId: number) {
       <tbody>
         <tr v-for="action in displayActions" :key="action.id">
           <td>{{ action.id }}</td>
-          <td>{{ action.datetime }}</td>
+          <td>
+            {{
+              DateTime.fromISO(action.datetime).toLocaleString(
+                DateTime.DATETIME_SHORT
+              )
+            }}
+          </td>
           <td>{{ action.action }}</td>
           <td>{{ action.score }}</td>
           <td>{{ action.description }}</td>

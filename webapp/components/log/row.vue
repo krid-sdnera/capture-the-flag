@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { LogData } from "~/server/types/log";
+import { DateTime } from "luxon";
 
 const props = defineProps<{
   log: LogData;
@@ -16,7 +17,11 @@ const { tracker, loading: trackerLoading } = useFetchTracker(log.trackerId);
 <template>
   <tr>
     <td>{{ log.id }}</td>
-    <td>{{ log.datetime }}</td>
+    <td>
+      {{
+        DateTime.fromISO(log.datetime).toLocaleString(DateTime.DATETIME_SHORT)
+      }}
+    </td>
     <td>{{ log.lat }}</td>
     <td>{{ log.long }}</td>
     <td>

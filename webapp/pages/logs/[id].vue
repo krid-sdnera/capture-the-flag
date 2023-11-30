@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useBreadcrumbs } from "~/types/breadcrumbs";
+import { DateTime } from "luxon";
 
 useHead({
   title: "Log",
@@ -60,11 +61,18 @@ function logDeleted(id: number) {
     ></LogDelete>
 
     <div>ID: {{ data.log.id }}</div>
-    <div>Name: {{ data.log.datetime }}</div>
+    <div>
+      Datetime:
+      {{
+        DateTime.fromISO(data.log.datetime).toLocaleString(
+          DateTime.DATETIME_SHORT
+        )
+      }}
+    </div>
     <div>Lat: {{ data.log.lat }}</div>
     <div>Long: {{ data.log.long }}</div>
-    <div>Tracker: {{ data.log.tracker.name }}</div>
-    <div>Team: {{ data.log.team?.name ?? "none" }}</div>
+    <div>Tracker: {{ data.log.trackerId }}</div>
+    <div>Team: {{ data.log.teamId ?? "none" }}</div>
     <div>Distance: {{ data.log.distance }}</div>
   </div>
   <div v-else>loading or error</div>
