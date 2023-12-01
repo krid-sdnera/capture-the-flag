@@ -32,27 +32,31 @@ async function submitUpdate() {
 
 <template>
   <form>
-    <h2>Update Tracker</h2>
-    <div>
-      <p>ID: {{ newTracker.id }}</p>
-    </div>
-    <div>
-      <label for="form-tracker-update-name">Tracker name</label>
-      <input id="form-tracker-update-name" v-model="newTracker.name" />
-    </div>
-    <div>
-      <label for="form-tracker-update-score-modifier">
-        Tracker score modifier
-      </label>
-      <input
-        id="form-tracker-update-score-modifier"
-        type="number"
-        v-model="newTracker.scoreModifier"
-      />
-    </div>
-    <div v-if="error">{{ errorMessage }}</div>
-    <button type="button" @click="submitUpdate" :disabled="loading">
-      Update Tracker
-    </button>
+    <fieldset>
+      <legend>Update Tracker</legend>
+      <div>
+        <p>ID: {{ newTracker.id }}</p>
+      </div>
+      <div class="form-row">
+        <label for="form-tracker-update-name">Tracker name</label>
+        <input id="form-tracker-update-name" v-model="newTracker.name" />
+      </div>
+      <div class="form-row">
+        <label for="form-tracker-update-score-modifier">
+          Tracker score modifier
+        </label>
+        <input
+          id="form-tracker-update-score-modifier"
+          type="number"
+          v-model="newTracker.scoreModifier"
+        />
+      </div>
+      <div v-if="error">{{ errorMessage }}</div>
+      <div class="form-actions">
+        <button type="button" @click="submitUpdate" :disabled="loading">
+          Update Tracker
+        </button>
+      </div>
+    </fieldset>
   </form>
 </template>

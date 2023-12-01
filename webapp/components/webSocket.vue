@@ -105,6 +105,7 @@ watch(
 /* Default datetime styles for each row */
 .log-datetime {
   opacity: 0;
+  z-index: -1;
   display: inline-block;
   position: absolute;
   right: 100%;
@@ -131,6 +132,7 @@ input.log-show-datetimes:checked ~ .log-container .log-datetime,
 .log-show-datetimes:hover ~ .log-container .log-datetime,
 .log-row:hover .log-datetime {
   opacity: 1;
+  z-index: 99;
 }
 
 /* When ShowAll element is checked or hovered  */

@@ -21,11 +21,24 @@ async function submitDelete() {
 
 <template>
   <form>
-    <h2>Delete Action</h2>
+    <fieldset>
+      <legend>Delete Action</legend>
 
-    <div v-if="error">{{ errorMessage }}</div>
-    <button type="button" @click="submitDelete" :disabled="loading || deleted">
-      Delete Action
-    </button>
+      <div style="color: red">
+        Just checking that you are wanting to delete the action:<br />
+        "{{ action.description }}" [id={{ action.id }}]
+      </div>
+
+      <div v-if="error">{{ errorMessage }}</div>
+      <div class="form-actions">
+        <button
+          type="button"
+          @click="submitDelete"
+          :disabled="loading || deleted"
+        >
+          Delete Action
+        </button>
+      </div>
+    </fieldset>
   </form>
 </template>

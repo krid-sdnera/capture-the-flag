@@ -4,7 +4,7 @@ const { refresh, loading, error, errorMessage } = useFetchStats();
 </script>
 
 <template>
-  <form>
+  <div>
     <h2>Stats</h2>
     <button type="button" @click="refresh()">Refresh</button>
 
@@ -37,5 +37,5 @@ const { refresh, loading, error, errorMessage } = useFetchStats();
 
       <pre>{{ JSON.stringify(stats, null, 2) }}</pre>
     </div>
-  </form>
+  </div>
 </template>

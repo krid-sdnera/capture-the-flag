@@ -24,30 +24,38 @@ async function submitCreate() {
 
 <template>
   <form>
-    <h2>Create Team</h2>
-    <div>
-      <label for="form-team-create-name">Team name</label>
-      <input id="form-team-create-name" v-model="newTeam.name" />
-    </div>
-    <div>
-      <label for="form-team-create-lat">Lat</label>
-      <input
-        type="number"
-        id="form-team-create-lat"
-        v-model="newTeam.flagZoneLat"
-      />
-    </div>
-    <div>
-      <label for="form-team-create-long">Long</label>
-      <input
-        type="number"
-        id="form-team-create-long"
-        v-model="newTeam.flagZoneLong"
-      />
-    </div>
-    <div v-if="error">{{ errorMessage }}</div>
-    <button type="button" @click="submitCreate" :disabled="loading || created">
-      Create Team
-    </button>
+    <fieldset>
+      <legend>Create Team</legend>
+      <div class="form-row">
+        <label for="form-team-create-name">Team name</label>
+        <input id="form-team-create-name" v-model="newTeam.name" />
+      </div>
+      <div class="form-row">
+        <label for="form-team-create-lat">Lat</label>
+        <input
+          type="number"
+          id="form-team-create-lat"
+          v-model="newTeam.flagZoneLat"
+        />
+      </div>
+      <div class="form-row">
+        <label for="form-team-create-long">Long</label>
+        <input
+          type="number"
+          id="form-team-create-long"
+          v-model="newTeam.flagZoneLong"
+        />
+      </div>
+      <div v-if="error">{{ errorMessage }}</div>
+      <div class="form-actions">
+        <button
+          type="button"
+          @click="submitCreate"
+          :disabled="loading || created"
+        >
+          Create Team
+        </button>
+      </div>
+    </fieldset>
   </form>
 </template>

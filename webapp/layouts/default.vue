@@ -165,4 +165,29 @@ th {
   border: 1px solid #555;
   padding: 3px 10px;
 }
+
+form {
+  max-width: 500px;
+  margin-bottom: 20px;
+}
+form fieldset {
+  display: flex;
+  flex-direction: column;
+}
+form .form-row,
+form .form-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0.5em;
+}
+
+form .form-row > label {
+  flex: 1;
+}
+form .form-row > :not(label) {
+  flex: 2;
+}
+form .form-actions > button {
+  flex-shrink: 1;
+}
 </style>

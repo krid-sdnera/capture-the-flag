@@ -26,24 +26,32 @@ async function submitCreate() {
 
 <template>
   <form>
-    <h2>Create Tracker</h2>
-    <div>
-      <label for="form-tracker-create-name">Tracker name</label>
-      <input id="form-tracker-create-name" v-model="newTracker.name" />
-    </div>
-    <div>
-      <label for="form-tracker-create-score-modifier"
-        >Tracker score modifier</label
-      >
-      <input
-        id="form-tracker-create-score-modifier"
-        type="number"
-        v-model="newTracker.scoreModifier"
-      />
-    </div>
-    <div v-if="error">{{ errorMessage }}</div>
-    <button type="button" @click="submitCreate" :disabled="loading || created">
-      Create Tracker
-    </button>
+    <fieldset>
+      <legend>Create Tracker</legend>
+      <div class="form-row">
+        <label for="form-tracker-create-name">Tracker name</label>
+        <input id="form-tracker-create-name" v-model="newTracker.name" />
+      </div>
+      <div class="form-row">
+        <label for="form-tracker-create-score-modifier"
+          >Tracker score modifier</label
+        >
+        <input
+          id="form-tracker-create-score-modifier"
+          type="number"
+          v-model="newTracker.scoreModifier"
+        />
+      </div>
+      <div v-if="error">{{ errorMessage }}</div>
+      <div class="form-actions">
+        <button
+          type="button"
+          @click="submitCreate"
+          :disabled="loading || created"
+        >
+          Create Tracker
+        </button>
+      </div>
+    </fieldset>
   </form>
 </template>

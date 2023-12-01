@@ -21,11 +21,25 @@ async function submitDelete() {
 
 <template>
   <form>
-    <h2>Delete Flag</h2>
+    <fieldset>
+      <legend>Delete Flag</legend>
 
-    <div v-if="error">{{ errorMessage }}</div>
-    <button type="button" @click="submitDelete" :disabled="loading || deleted">
-      Delete Flag
-    </button>
+      <div style="color: red">
+        Just checking that you are wanting to delete the flag:<br />
+        "{{ flag.datetime }}" [id={{ flag.id }}]
+      </div>
+
+      <div v-if="error">{{ errorMessage }}</div>
+
+      <div class="form-actions">
+        <button
+          type="button"
+          @click="submitDelete"
+          :disabled="loading || deleted"
+        >
+          Delete Flag
+        </button>
+      </div>
+    </fieldset>
   </form>
 </template>

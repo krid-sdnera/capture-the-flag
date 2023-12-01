@@ -35,33 +35,37 @@ async function submitUpdate() {
 
 <template>
   <form>
-    <h2>Update Team</h2>
-    <div>
-      <p>ID: {{ newTeam.id }}</p>
-    </div>
-    <div>
-      <label for="form-team-update-name">Team name</label>
-      <input id="form-team-update-name" v-model="newTeam.name" />
-    </div>
-    <div>
-      <label for="form-team-update-lat">Lat</label>
-      <input
-        type="number"
-        id="form-team-update-lat"
-        v-model="newTeam.flagZoneLat"
-      />
-    </div>
-    <div>
-      <label for="form-team-update-long">Long</label>
-      <input
-        type="number"
-        id="form-team-update-long"
-        v-model="newTeam.flagZoneLong"
-      />
-    </div>
-    <div v-if="error">{{ errorMessage }}</div>
-    <button type="button" @click="submitUpdate" :disabled="loading">
-      Update Team
-    </button>
+    <fieldset>
+      <legend>Update Team</legend>
+      <div>
+        <p>ID: {{ newTeam.id }}</p>
+      </div>
+      <div class="form-row">
+        <label for="form-team-update-name">Team name</label>
+        <input id="form-team-update-name" v-model="newTeam.name" />
+      </div>
+      <div class="form-row">
+        <label for="form-team-update-lat">Lat</label>
+        <input
+          type="number"
+          id="form-team-update-lat"
+          v-model="newTeam.flagZoneLat"
+        />
+      </div>
+      <div class="form-row">
+        <label for="form-team-update-long">Long</label>
+        <input
+          type="number"
+          id="form-team-update-long"
+          v-model="newTeam.flagZoneLong"
+        />
+      </div>
+      <div v-if="error">{{ errorMessage }}</div>
+      <div class="form-actions">
+        <button type="button" @click="submitUpdate" :disabled="loading">
+          Update Team
+        </button>
+      </div>
+    </fieldset>
   </form>
 </template>

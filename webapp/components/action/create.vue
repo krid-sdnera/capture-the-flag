@@ -38,39 +38,50 @@ async function submitCreate() {
 
 <template>
   <form>
-    <h2>Create Action</h2>
-    <div>
-      <label for="form-action-update-action">action</label>
-      <select id="form-action-update-action" v-model="newAction.action">
-        <option v-for="(label, key) in ActionOptions" :key="key" :value="key">
-          {{ label }}
-        </option>
-      </select>
-    </div>
-    <div>
-      <label for="form-action-update-score">score</label>
-      <input
-        type="number"
-        id="form-action-update-score"
-        v-model="newAction.score"
-      />
-    </div>
-    <div>
-      <label for="form-log-create-description">Description</label>
-      <input id="form-log-create-description" v-model="newAction.description" />
-    </div>
-    <div>
-      <label for="form-log-create-team">Team</label>
-      <input
-        type="number"
-        id="form-log-create-team"
-        v-model="newAction.teamId"
-      />
-    </div>
+    <fieldset>
+      <legend>Create Action</legend>
+      <div class="form-row">
+        <label for="form-action-update-action">action</label>
+        <select id="form-action-update-action" v-model="newAction.action">
+          <option v-for="(label, key) in ActionOptions" :key="key" :value="key">
+            {{ label }}
+          </option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label for="form-action-update-score">score</label>
+        <input
+          type="number"
+          id="form-action-update-score"
+          v-model="newAction.score"
+        />
+      </div>
+      <div class="form-row">
+        <label for="form-log-create-description">Description</label>
+        <input
+          id="form-log-create-description"
+          v-model="newAction.description"
+        />
+      </div>
+      <div class="form-row">
+        <label for="form-log-create-team">Team</label>
+        <input
+          type="number"
+          id="form-log-create-team"
+          v-model="newAction.teamId"
+        />
+      </div>
 
-    <div v-if="error">{{ errorMessage }}</div>
-    <button type="button" @click="submitCreate" :disabled="loading || created">
-      Create Action
-    </button>
+      <div v-if="error">{{ errorMessage }}</div>
+      <div class="form-actions">
+        <button
+          type="button"
+          @click="submitCreate"
+          :disabled="loading || created"
+        >
+          Create Action
+        </button>
+      </div>
+    </fieldset>
   </form>
 </template>

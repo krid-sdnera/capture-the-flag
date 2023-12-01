@@ -21,11 +21,24 @@ async function submitDelete() {
 
 <template>
   <form>
-    <h2>Delete Tracker</h2>
+    <fieldset>
+      <legend>Delete Tracker</legend>
 
-    <div v-if="error">{{ errorMessage }}</div>
-    <button type="button" @click="submitDelete" :disabled="loading || deleted">
-      Delete Tracker
-    </button>
+      <div style="color: red">
+        Just checking that you are wanting to delete the tracker:<br />
+        "{{ tracker.name }}" [id={{ tracker.id }}]
+      </div>
+
+      <div v-if="error">{{ errorMessage }}</div>
+      <div class="form-actions">
+        <button
+          type="button"
+          @click="submitDelete"
+          :disabled="loading || deleted"
+        >
+          Delete Tracker
+        </button>
+      </div>
+    </fieldset>
   </form>
 </template>

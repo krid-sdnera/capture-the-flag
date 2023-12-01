@@ -39,43 +39,50 @@ async function submitUpdate() {
 
 <template>
   <form>
-    <h2>Update Action</h2>
-    <div>
-      <p>ID: {{ newAction.id }}</p>
-    </div>
-    <div>
-      <label for="form-action-update-action">action</label>
-      <select id="form-action-update-action" v-model="newAction.action">
-        <option value="violation">Violation</option>
-        <option value="respawn">Respawn</option>
-        <option value="death">Death</option>
-        <option value="chance">Game of Chance</option>
-        <option value="other">Other</option>
-      </select>
-    </div>
-    <div>
-      <label for="form-action-update-score">score</label>
-      <input
-        type="number"
-        id="form-action-update-score"
-        v-model="newAction.score"
-      />
-    </div>
-    <div>
-      <label for="form-log-create-description">Description</label>
-      <input id="form-log-create-description" v-model="newAction.description" />
-    </div>
-    <div>
-      <label for="form-log-create-team">Team</label>
-      <input
-        type="number"
-        id="form-log-create-team"
-        v-model="newAction.teamId"
-      />
-    </div>
-    <div v-if="error">{{ errorMessage }}</div>
-    <button type="button" @click="submitUpdate" :disabled="loading">
-      Update Action
-    </button>
+    <fieldset>
+      <legend>Update Action</legend>
+      <div>
+        <p>ID: {{ newAction.id }}</p>
+      </div>
+      <div class="form-row">
+        <label for="form-action-update-action">action</label>
+        <select id="form-action-update-action" v-model="newAction.action">
+          <option value="violation">Violation</option>
+          <option value="respawn">Respawn</option>
+          <option value="death">Death</option>
+          <option value="chance">Game of Chance</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label for="form-action-update-score">score</label>
+        <input
+          type="number"
+          id="form-action-update-score"
+          v-model="newAction.score"
+        />
+      </div>
+      <div class="form-row">
+        <label for="form-log-create-description">Description</label>
+        <input
+          id="form-log-create-description"
+          v-model="newAction.description"
+        />
+      </div>
+      <div class="form-row">
+        <label for="form-log-create-team">Team</label>
+        <input
+          type="number"
+          id="form-log-create-team"
+          v-model="newAction.teamId"
+        />
+      </div>
+      <div v-if="error">{{ errorMessage }}</div>
+      <div class="form-actions">
+        <button type="button" @click="submitUpdate" :disabled="loading">
+          Update Action
+        </button>
+      </div>
+    </fieldset>
   </form>
 </template>
