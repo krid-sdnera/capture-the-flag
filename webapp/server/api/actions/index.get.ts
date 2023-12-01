@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
 import prisma from "~/server/prisma";
-import { ActionData } from "~/server/types/action";
+import { ActionData, ActionOptionKeys } from "~/server/types/action";
 
 interface ResponseSuccess {
   success: true;
@@ -17,7 +17,8 @@ interface ResponseFailure {
 
 interface QueryParams {
   page: string;
-  teamId: string;
+  teamId?: string;
+  action?: ActionOptionKeys;
 }
 
 export default defineEventHandler(
@@ -37,12 +38,14 @@ export default defineEventHandler(
         },
         where: {
           teamId: params.teamId ? Number(params.teamId) : undefined,
+          action: params.action ? params.action : undefined,
         },
       });
 
       const actionsCount = await prisma.action.count({
         where: {
           teamId: params.teamId ? Number(params.teamId) : undefined,
+          action: params.action ? params.action : undefined,
         },
       });
 

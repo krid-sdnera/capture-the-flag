@@ -1,12 +1,21 @@
 <script setup lang="ts">
 import type { TeamData } from "~/server/types/team";
-import type { TrackerData } from "~/server/types/tracker";
-import { parseQueryParamAsNumber } from "~/utils/queryParams";
 import { DateTime } from "luxon";
+import type { ActionOptionKeys } from "~/server/types/action";
 
 const props = defineProps<{
   team?: TeamData;
+  action?: ActionOptionKeys;
 }>();
+
+const { fields, useUiFilterControls } = useListFilters<{
+  teamId: Ref<number | undefined>;
+  action: Ref<ActionOptionKeys | undefined>;
+}>({
+  teamId: ref(props.team?.id),
+  action: ref(props.action),
+});
+const uiFilterControls = useUiFilterControls();
 
 const { useListActions } = useAction();
 const {
@@ -18,7 +27,8 @@ const {
   errorMessage,
 } = useListActions({
   where: {
-    teamId: props.team?.id ?? parseQueryParamAsNumber("teamId"),
+    teamId: fields.teamId,
+    action: fields.action,
   },
 });
 
@@ -41,6 +51,10 @@ function actionCreated(newId: number) {
       @created="actionCreated"
       :team="props.team"
     ></ActionCreate>
+
+    <UiPageControls :controls="uiPageControls"></UiPageControls>
+
+    <UiFilterControls :filters="uiFilterControls"></UiFilterControls>
 
     <div v-if="error">Unable to load action list {{ errorMessage }}</div>
     <div v-else-if="loading">Loading Actions</div>

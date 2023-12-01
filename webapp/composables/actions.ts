@@ -2,6 +2,7 @@ import type {
   ActionData,
   ActionCreateInput,
   ActionUpdateInput,
+  ActionOptionKeys,
 } from "~/server/types/action";
 import { usePageControls } from "./pageControls";
 
@@ -65,13 +66,19 @@ export const useAction = () => {
 
       return fetchActionComposable[actionId];
     },
-    useListActions: (options?: { where?: { teamId?: number } }) => {
+    useListActions: (options: {
+      where: {
+        teamId?: Ref<number | undefined>;
+        action?: Ref<ActionOptionKeys | undefined>;
+      };
+    }) => {
       const { currentPage, useUiPageControls } = usePageControls();
 
       const { data, refresh, pending } = useFetch(`/api/actions`, {
         params: {
           page: currentPage,
-          teamId: options?.where?.teamId ?? undefined,
+          teamId: options.where.teamId,
+          action: options.where.action,
         },
       });
 

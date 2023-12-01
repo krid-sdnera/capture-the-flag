@@ -61,16 +61,19 @@ export const useFlag = () => {
 
       return fetchFlagComposable[flagId];
     },
-    useListFlags: (options?: {
-      where?: { teamId?: number; trackerId?: number };
+    useListFlags: (options: {
+      where: {
+        teamId?: Ref<number | undefined>;
+        trackerId?: Ref<number | undefined>;
+      };
     }) => {
       const { currentPage, useUiPageControls } = usePageControls();
 
       const { data, refresh, pending } = useFetch(`/api/flags`, {
         params: {
           page: currentPage,
-          teamId: options?.where?.teamId ?? undefined,
-          trackerId: options?.where?.trackerId ?? undefined,
+          teamId: options.where.teamId,
+          trackerId: options.where.trackerId,
         },
       });
 

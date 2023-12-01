@@ -1,19 +1,27 @@
 <script setup lang="ts">
 import type { TeamData } from "~/server/types/team";
 import type { TrackerData } from "~/server/types/tracker";
-import { parseQueryParamAsNumber } from "~/utils/queryParams";
 
 const props = defineProps<{
   team?: TeamData;
   tracker?: TrackerData;
 }>();
 
+const { fields, useUiFilterControls } = useListFilters<{
+  teamId: Ref<number | undefined>;
+  trackerId: Ref<number | undefined>;
+}>({
+  teamId: ref(props.team?.id),
+  trackerId: ref(props.tracker?.id),
+});
+const uiFilterControls = useUiFilterControls();
+
 const { useListLogs } = useLog();
 const { displayLogs, uiPageControls, refresh, loading, error, errorMessage } =
   useListLogs({
     where: {
-      teamId: props.team?.id ?? parseQueryParamAsNumber("teamId"),
-      trackerId: props.tracker?.id ?? parseQueryParamAsNumber("trackerId"),
+      teamId: fields.teamId,
+      trackerId: fields.trackerId,
     },
   });
 
@@ -37,6 +45,10 @@ function logCreated(newId: number) {
       :tracker="props.tracker"
       :team="props.team"
     ></LogCreate>
+
+    <UiPageControls :controls="uiPageControls"></UiPageControls>
+
+    <UiFilterControls :filters="uiFilterControls"></UiFilterControls>
 
     <div v-if="error">Unable to load log list {{ errorMessage }}</div>
     <div v-else-if="loading">Loading Logs</div>
