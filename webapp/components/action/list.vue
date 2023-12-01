@@ -40,7 +40,7 @@ function actionCreated(newId: number) {
 </script>
 
 <template>
-  <form>
+  <div>
     <h2>Actions</h2>
 
     <button type="button" @click="showActionCreate = !showActionCreate">
@@ -94,5 +94,5 @@ function actionCreated(newId: number) {
     </table>
 
     <UiPageControls :controls="uiPageControls"></UiPageControls>
-  </form>
+  </div>
 </template>

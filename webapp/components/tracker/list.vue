@@ -17,7 +17,7 @@ function trackerCreated(newId: number) {
 </script>
 
 <template>
-  <form>
+  <div>
     <h2>Trackers</h2>
 
     <button type="button" @click="showTrackerCreate = !showTrackerCreate">
@@ -60,5 +60,5 @@ function trackerCreated(newId: number) {
     </table>
 
     <UiPageControls :controls="uiPageControls"></UiPageControls>
-  </form>
+  </div>
 </template>

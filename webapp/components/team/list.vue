@@ -11,7 +11,7 @@ function teamCreated(newId: number) {
 </script>
 
 <template>
-  <form>
+  <div>
     <h2>Teams</h2>
 
     <button type="button" @click="showTeamCreate = !showTeamCreate">
@@ -51,5 +51,5 @@ function teamCreated(newId: number) {
     </table>
 
     <UiPageControls :controls="uiPageControls"></UiPageControls>
-  </form>
+  </div>
 </template>

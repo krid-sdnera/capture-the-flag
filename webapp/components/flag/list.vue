@@ -34,7 +34,7 @@ function flagCreated(newId: number) {
 </script>
 
 <template>
-  <form>
+  <div>
     <h2>Flags</h2>
 
     <button type="button" @click="showFlagCreate = !showFlagCreate">
@@ -97,5 +97,5 @@ function flagCreated(newId: number) {
     </table>
 
     <UiPageControls :controls="uiPageControls"></UiPageControls>
-  </form>
+  </div>
 </template>

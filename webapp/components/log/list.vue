@@ -33,7 +33,7 @@ function logCreated(newId: number) {
 </script>
 
 <template>
-  <form>
+  <div>
     <h2>Logs</h2>
 
     <button type="button" @click="showLogCreate = !showLogCreate">
@@ -71,5 +71,5 @@ function logCreated(newId: number) {
     </table>
 
     <UiPageControls :controls="uiPageControls"></UiPageControls>
-  </form>
+  </div>
 </template>
