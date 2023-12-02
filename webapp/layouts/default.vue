@@ -52,6 +52,7 @@ const breadcrumbs = computed<Breadcrumb[]>(
 
         <div class="websocket-container">
           <WebSocket></WebSocket>
+          <Clock></Clock>
         </div>
       </div>
     </main>
