@@ -18,13 +18,18 @@ services:
     depends_on:
       - postgresdb
     ports:
-      - $NODE_PORT:3000
+      - 3030:3000
+    volumes:
+      - app:/app
     environment:
       - DB_HOST=postgresdb
       - DB_USER=internal_user
       - DB_PASSWORD=internal-password
       - DB_NAME=capture_the_flag
       - DB_PORT=5432
+    working_dir: /app/capture-the-flag/webapp/
+    command: "npm start"
 
 volumes:
   db:
+  app:
