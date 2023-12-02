@@ -92,7 +92,7 @@ const trackerTraces = computed((): TrackerTraces[] => {
   return trackerTraces;
 });
 
-const initialCenter = { lat: -37.75011006689245, lng: 144.8561244333282 };
+const initialCenter = { lat: -37.41012933716494, lng: 144.6960548304394 };
 
 const openedMarkerTeamID = ref<number | null>(null);
 function openMarkerTeam(id: number | null) {
@@ -175,7 +175,7 @@ watch(trackerPending, (pending) => pending === false && selectAllTrackers(), {
       <ClientOnly>
         <GMapMap
           :center="initialCenter"
-          :zoom="18"
+          :zoom="17"
           :options="{
             zoomControl: true,
             mapTypeControl: true,
@@ -190,7 +190,7 @@ watch(trackerPending, (pending) => pending === false && selectAllTrackers(), {
           <GMapCircle
             :key="team.id"
             v-for="team in filteredTeams"
-            :radius="50"
+            :radius="30"
             :center="{ lat: team.flagZoneLat, lng: team.flagZoneLong }"
           />
           <!-- Team Flag Zone Markers -->
