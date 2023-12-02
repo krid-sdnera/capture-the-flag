@@ -43,21 +43,26 @@ function actionCreated(newId: number) {
   <div>
     <h2>Actions</h2>
 
-    <button type="button" @click="showActionCreate = !showActionCreate">
-      {{ showActionCreate ? "Hide" : "Show" }} Create Action
-    </button>
     <ActionCreate
       v-if="showActionCreate"
       @created="actionCreated"
       :team="props.team"
     ></ActionCreate>
 
-    <UiPageControls :controls="uiPageControls"></UiPageControls>
+    <UiListControls>
+      <div>
+        <button type="button" @click="showActionCreate = !showActionCreate">
+          {{ showActionCreate ? "Hide" : "Show" }} Create Action
+        </button>
+      </div>
 
-    <UiFilterControls :filters="uiFilterControls"></UiFilterControls>
+      <UiPageControls :controls="uiPageControls"></UiPageControls>
+
+      <UiFilterControls :filters="uiFilterControls"></UiFilterControls>
+    </UiListControls>
 
     <div v-if="error">Unable to load action list {{ errorMessage }}</div>
-    <div v-else-if="loading">Loading Actions</div>
+    <TableSkeleton v-else-if="loading" :rows="15" :columns="7"></TableSkeleton>
     <table v-else>
       <thead>
         <tr>
@@ -93,6 +98,8 @@ function actionCreated(newId: number) {
       </tbody>
     </table>
 
-    <UiPageControls :controls="uiPageControls"></UiPageControls>
+    <UiListControls>
+      <UiPageControls :controls="uiPageControls"></UiPageControls>
+    </UiListControls>
   </div>
 </template>

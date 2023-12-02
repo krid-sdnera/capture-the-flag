@@ -141,6 +141,7 @@ main {
 
 table {
   border-collapse: collapse;
+  width: 100%;
 }
 
 td,

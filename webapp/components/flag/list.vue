@@ -37,9 +37,6 @@ function flagCreated(newId: number) {
   <div>
     <h2>Flags</h2>
 
-    <button type="button" @click="showFlagCreate = !showFlagCreate">
-      {{ showFlagCreate ? "Hide" : "Show" }} Create Flag
-    </button>
     <FlagCreate
       v-if="showFlagCreate"
       @created="flagCreated"
@@ -47,12 +44,20 @@ function flagCreated(newId: number) {
       :team="props.team"
     ></FlagCreate>
 
-    <UiPageControls :controls="uiPageControls"></UiPageControls>
+    <UiListControls>
+      <div>
+        <button type="button" @click="showFlagCreate = !showFlagCreate">
+          {{ showFlagCreate ? "Hide" : "Show" }} Create Flag
+        </button>
+      </div>
 
-    <UiFilterControls :filters="uiFilterControls"></UiFilterControls>
+      <UiPageControls :controls="uiPageControls"></UiPageControls>
+
+      <UiFilterControls :filters="uiFilterControls"></UiFilterControls>
+    </UiListControls>
 
     <div v-if="error">Unable to load flag list {{ errorMessage }}</div>
-    <div v-else-if="loading">Loading Flags</div>
+    <TableSkeleton v-else-if="loading" :rows="15" :columns="10"></TableSkeleton>
     <table v-else>
       <thead>
         <tr>
@@ -96,6 +101,8 @@ function flagCreated(newId: number) {
       </tbody>
     </table>
 
-    <UiPageControls :controls="uiPageControls"></UiPageControls>
+    <UiListControls>
+      <UiPageControls :controls="uiPageControls"></UiPageControls>
+    </UiListControls>
   </div>
 </template>

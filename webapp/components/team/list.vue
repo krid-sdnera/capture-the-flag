@@ -14,13 +14,22 @@ function teamCreated(newId: number) {
   <div>
     <h2>Teams</h2>
 
-    <button type="button" @click="showTeamCreate = !showTeamCreate">
-      {{ showTeamCreate ? "Hide" : "Show" }} Create Team
-    </button>
     <TeamCreate v-if="showTeamCreate" @created="teamCreated"></TeamCreate>
 
+    <UiListControls>
+      <div>
+        <button type="button" @click="showTeamCreate = !showTeamCreate">
+          {{ showTeamCreate ? "Hide" : "Show" }} Create Team
+        </button>
+      </div>
+
+      <UiPageControls :controls="uiPageControls"></UiPageControls>
+
+      <div></div>
+    </UiListControls>
+
     <div v-if="error">Unable to load team list {{ errorMessage }}</div>
-    <div v-else-if="loading">Loading Teams</div>
+    <TableSkeleton v-else-if="loading" :rows="15" :columns="7"></TableSkeleton>
     <table v-else>
       <thead>
         <tr>
@@ -50,6 +59,8 @@ function teamCreated(newId: number) {
       </tbody>
     </table>
 
-    <UiPageControls :controls="uiPageControls"></UiPageControls>
+    <UiListControls>
+      <UiPageControls :controls="uiPageControls"></UiPageControls>
+    </UiListControls>
   </div>
 </template>

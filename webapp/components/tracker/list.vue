@@ -20,16 +20,25 @@ function trackerCreated(newId: number) {
   <div>
     <h2>Trackers</h2>
 
-    <button type="button" @click="showTrackerCreate = !showTrackerCreate">
-      {{ showTrackerCreate ? "Hide" : "Show" }} Create Tracker
-    </button>
     <TrackerCreate
       v-if="showTrackerCreate"
       @created="trackerCreated"
     ></TrackerCreate>
 
+    <UiListControls>
+      <div>
+        <button type="button" @click="showTrackerCreate = !showTrackerCreate">
+          {{ showTrackerCreate ? "Hide" : "Show" }} Create Tracker
+        </button>
+      </div>
+
+      <UiPageControls :controls="uiPageControls"></UiPageControls>
+
+      <div></div>
+    </UiListControls>
+
     <div v-if="error">Unable to load tracker list {{ errorMessage }}</div>
-    <div v-else-if="loading">Loading Trackers</div>
+    <TableSkeleton v-else-if="loading" :rows="15" :columns="6"></TableSkeleton>
     <table v-else>
       <thead>
         <tr>
@@ -59,6 +68,8 @@ function trackerCreated(newId: number) {
       </tbody>
     </table>
 
-    <UiPageControls :controls="uiPageControls"></UiPageControls>
+    <UiListControls>
+      <UiPageControls :controls="uiPageControls"></UiPageControls>
+    </UiListControls>
   </div>
 </template>

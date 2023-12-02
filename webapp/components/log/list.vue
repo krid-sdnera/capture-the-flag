@@ -36,9 +36,6 @@ function logCreated(newId: number) {
   <div>
     <h2>Logs</h2>
 
-    <button type="button" @click="showLogCreate = !showLogCreate">
-      {{ showLogCreate ? "Hide" : "Show" }} Create Log
-    </button>
     <LogCreate
       v-if="showLogCreate"
       @created="logCreated"
@@ -46,12 +43,20 @@ function logCreated(newId: number) {
       :team="props.team"
     ></LogCreate>
 
-    <UiPageControls :controls="uiPageControls"></UiPageControls>
+    <UiListControls>
+      <div>
+        <button type="button" @click="showLogCreate = !showLogCreate">
+          {{ showLogCreate ? "Hide" : "Show" }} Create Log
+        </button>
+      </div>
 
-    <UiFilterControls :filters="uiFilterControls"></UiFilterControls>
+      <UiPageControls :controls="uiPageControls"></UiPageControls>
+
+      <UiFilterControls :filters="uiFilterControls"></UiFilterControls>
+    </UiListControls>
 
     <div v-if="error">Unable to load log list {{ errorMessage }}</div>
-    <div v-else-if="loading">Loading Logs</div>
+    <TableSkeleton v-else-if="loading" :rows="15" :columns="8"></TableSkeleton>
     <table v-else>
       <thead>
         <tr>
@@ -70,6 +75,8 @@ function logCreated(newId: number) {
       </tbody>
     </table>
 
-    <UiPageControls :controls="uiPageControls"></UiPageControls>
+    <UiListControls>
+      <UiPageControls :controls="uiPageControls"></UiPageControls>
+    </UiListControls>
   </div>
 </template>
