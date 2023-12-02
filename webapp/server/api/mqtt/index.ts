@@ -1,12 +1,12 @@
 import { Prisma } from "@prisma/client";
 import { connect } from "mqtt";
-import prisma from "~/server/prisma";
-import { LogData } from "~/server/types/log";
+import prisma from "../../../server/prisma";
+import { LogData } from "../../../server/types/log";
 import {
   MqttTrackerMessage,
   MqttTrackerMessageJoin,
   MqttTrackerMessageUp,
-} from "~/server/types/mqtt";
+} from "../../../server/types/mqtt";
 import { DateTime } from "luxon";
 
 interface ParsedUplinkMessage {
@@ -31,34 +31,35 @@ interface FlagToInsert {
   distance: number;
 }
 
-import { useSocketServer } from "~/server/utils/websocket";
-import { FlagData } from "~/server/types/flag";
+import { useSocketServer } from "../../../server/utils/websocket";
+import { FlagData } from "../../../server/types/flag";
 const { sendMessage } = useSocketServer();
 
-const config = useRuntimeConfig();
-
-const client = connect(config.mqtt.host, {
-  username: config.mqtt.username,
-  password: config.mqtt.password,
-});
-
-client.on("connect", () => {
-  client.subscribe(`v3/${config.mqtt.username}/devices/#`, (err) => {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log("Connected to MQTT");
-    }
+export function useMQTTConnect() {
+  const config = useRuntimeConfig();
+  const client = connect(config.mqtt.host, {
+    username: config.mqtt.username,
+    password: config.mqtt.password,
   });
-});
 
-client.on("message", async (topic, message) => {
-  console.log(`MQTT message received:`, topic, message.toString());
+  client.on("connect", () => {
+    client.subscribe(`v3/${config.mqtt.username}/devices/#`, (err) => {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log("Connected to MQTT");
+      }
+    });
+  });
 
-  await handleTrackerMessage(
-    JSON.parse(message.toString()) as unknown as MqttTrackerMessage
-  );
-});
+  client.on("message", async (topic, message) => {
+    console.log(`MQTT message received:`, topic, message.toString());
+
+    await handleTrackerMessage(
+      JSON.parse(message.toString()) as unknown as MqttTrackerMessage
+    );
+  });
+}
 
 async function handleTrackerMessage(message: MqttTrackerMessage) {
   if ("join_accept" in message) {

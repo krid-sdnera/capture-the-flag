@@ -1,5 +1,8 @@
 import { Socket, io } from "socket.io-client";
-import { MessageData, SocketServerRoomToken } from "~/server/types/webSocket";
+import {
+  MessageData,
+  SocketServerRoomToken,
+} from "../../server/types/webSocket";
 
 let socket: Socket | null = null;
 

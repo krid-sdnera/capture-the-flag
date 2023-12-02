@@ -8,6 +8,7 @@ function defineIOHandler(cb: (io: Server) => void): (io: Server) => void {
 // End inlined function definition.
 
 import { SocketServerRoomToken } from "../types/webSocket";
+import { useMQTTConnect } from "../api/mqtt";
 
 export default defineIOHandler((io) => {
   io.on("connection", (socket) => {
@@ -30,4 +31,6 @@ export default defineIOHandler((io) => {
       });
     }
   });
+
+  useMQTTConnect();
 });
