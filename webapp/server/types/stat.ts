@@ -9,6 +9,7 @@ export const StatSetType = {
   respawns: "Respawns",
   gameOfChanceWins: "Game Of Chance Wins",
   gameOfChanceLoses: "Game Of Chance Loses",
+  otherActions: "Other Actions",
 } as const;
 export type StatSetTypeKey = keyof typeof StatSetType;
 

@@ -131,6 +131,7 @@ class TeamStatManager {
     await this.calculateMissingLifeTokens();
     await this.calculateRespawns();
     await this.calculateGameOfChanceStats();
+    await this.calculateOtherActions();
 
     //endOfGame: {
     //   flagPossesion: number;
@@ -322,6 +323,7 @@ class TeamStatManager {
     // Calculate flag visibility violations.
     const capturedLifeTokens = await this.prisma.action.aggregate({
       _count: { action: true },
+      _sum: { score: true },
       where: {
         teamId: this.team.id,
         action: "kill",
@@ -332,7 +334,7 @@ class TeamStatManager {
       description: "kills",
       raw: capturedLifeTokens._count.action,
       score:
-        capturedLifeTokens._count.action *
+        (capturedLifeTokens._sum.score ?? 0) *
         config.public.scoreModifiers.capturedLifeToken,
       link: `/actions?teamId=${this.team.id}&action=kill`,
     });
@@ -366,6 +368,7 @@ class TeamStatManager {
     // Calculate flag visibility violations.
     const respawns = await this.prisma.action.aggregate({
       _count: { action: true },
+      _sum: { score: true },
       where: {
         teamId: this.team.id,
         action: "respawn",
@@ -375,7 +378,7 @@ class TeamStatManager {
     this.addStat("respawns", {
       description: "times respawned",
       raw: respawns._count.action,
-      score: respawns._count.action * config.public.scoreModifiers.respawn,
+      score: (respawns._sum.score ?? 0) * config.public.scoreModifiers.respawn,
       link: `/actions?teamId=${this.team.id}&action=respawn`,
     });
   }
@@ -424,6 +427,29 @@ class TeamStatManager {
         -1 *
         config.public.scoreModifiers.gameOfChanceLose,
       link: `/actions?teamId=${this.team.id}&action=chance`,
+    });
+  }
+
+  async calculateOtherActions(): Promise<void> {
+    const config = useRuntimeConfig();
+
+    // Calculate flag visibility violations.
+    const otherActions = await this.prisma.action.aggregate({
+      _count: { action: true },
+      _sum: { score: true },
+      where: {
+        teamId: this.team.id,
+        action: "other",
+      },
+    });
+
+    this.addStat("otherActions", {
+      description: "kills",
+      raw: otherActions._count.action,
+      score:
+        (otherActions._sum.score ?? 0) *
+        config.public.scoreModifiers.otherActions,
+      link: `/actions?teamId=${this.team.id}&action=other`,
     });
   }
 }
